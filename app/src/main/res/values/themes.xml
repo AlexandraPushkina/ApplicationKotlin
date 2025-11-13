@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 1. Основная ДНЕВНАЯ тема. -->
+    <style name="Theme.Homework6" parent="Theme.MaterialComponents.Light.NoActionBar" />
+
+    <!-- 2. Тема для SplashScreen -->
+    <style name="Theme.App.Starting" parent="Theme.SplashScreen">
+        <!-- ИСПРАВЛЕНО: Указываем на простой цвет, а не на градиент -->
+        <item name="windowSplashScreenBackground">@color/purple_splash</item>
+
+        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item>
+        <item name="postSplashScreenTheme">@style/Theme.Homework6</item>
+    </style>
+</resources>
