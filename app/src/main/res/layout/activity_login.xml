@@ -2,26 +2,25 @@
 
 <!--Используем Констрейнт, как самый гибкий вариант -->
 <!--"match_parent" - Зависит от родителя-->
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="16dp"
-    tools:context=".MainActivity">
+    tools:context=".LoginActivity">
 
     <!-- Контейнер для поля ввода "Email".
          TextInputLayout добавляет красивые анимации для подсказок (hint) и отображение ошибок. -->
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/email_text_input_layout"
+        android:id="@+id/email_input_layout"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:hint="Email"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintTop_toTopOf="parent">
 
         <!-- Непосредственно само поле для ввода текста. -->
         <!-- id - уникальный идентификатор -->
@@ -35,39 +34,40 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- Контейнер для поля ввода "Пароль". -->
-        <!-- toBottomOf - Верхняя граница до email". -->
-        <!-- toStartOf - Элемент начинается от родителя". -->
-        <!-- toEndOf - Элемент начинается до родителя. -->
+    <!-- Контейнер для поля ввода "Пароль". -->
+    <!-- toBottomOf - Верхняя граница до email". -->
+    <!-- toStartOf - Элемент начинается от родителя". -->
+    <!-- toEndOf - Элемент начинается до родителя. -->
     <com.google.android.material.textfield.TextInputLayout
-    android:id="@+id/password_text_input_layout"
-    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-    android:layout_width="0dp"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="8dp"
-    android:hint="Пароль"
-    app:layout_constraintTop_toBottomOf="@id/email_text_input_layout"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintEnd_toEndOf="parent">
-
-    <!-- Внутри теквтового контейнера элемент для ввода текста -->
-    <com.google.android.material.textfield.TextInputEditText
-        android:id="@+id/password_edit_text"
-        android:layout_width="match_parent"
+        android:id="@+id/password_input_layout"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:inputType="textPassword" />
+        android:layout_marginTop="8dp"
+        android:hint="Пароль"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/email_input_layout">
+
+        <!-- Внутри теквтового контейнера элемент для ввода текста -->
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/password_edit_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textPassword" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
     <!-- Кнопка в стиле Material Design. -->
-<com.google.android.material.button.MaterialButton
-android:id="@+id/login_button"
-android:layout_width="0dp"
-android:layout_height="wrap_content"
-android:layout_marginTop="16dp"
-android:text="Войти"
-app:layout_constraintTop_toBottomOf="@id/password_text_input_layout"
-app:layout_constraintStart_toStartOf="parent"
-app:layout_constraintEnd_toEndOf="parent" />
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/login_button"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Войти"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/password_input_layout"
+        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
