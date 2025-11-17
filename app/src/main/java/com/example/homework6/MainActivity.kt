@@ -1,16 +1,26 @@
 package com.example.homework6
 
-import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import com.example.homework6.databinding.ActivityLoginBinding
+import android.os.Bundle
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.setupWithNavController
+import com.example.homework6.databinding.ActivityMainBinding
+
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var binding: ActivityLoginBinding
+    private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        binding = ActivityLoginBinding.inflate(layoutInflater)
-        installSplashScreen() // Запустить начальный экран...
         super.onCreate(savedInstanceState)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        // Находим NavController
+        val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+        val navController = navHostFragment.navController
+
+        // Связываем NavController с нашей BottomNavigationView
+        // Эта одна строка автоматически обрабатывает все нажатия!
+        binding.bottomNavView.setupWithNavController(navController)
     }
 }

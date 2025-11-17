@@ -1,5 +1,6 @@
 package com.example.homework6
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
@@ -38,7 +39,10 @@ class LoginActivity : AppCompatActivity() {
 
         if (emailError == null && passwordError == null) {
             Toast.makeText(this, "Вход выполнен успешно!", Toast.LENGTH_SHORT).show()
-
+            // Intent - Намерение для перехода на MainActivity
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
+            finish()
         }
     }
 }

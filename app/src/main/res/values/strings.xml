@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">homework6</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="nav_menu_feed">Лента</string>
+    <string name="nav_menu_create_post">Создать</string>
+    <string name="nav_menu_profile">Профиль</string>
 </resources>
