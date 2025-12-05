@@ -49,7 +49,6 @@ dependencies {
 
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.activity)
-    val nav_version = "2.9.6"
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -64,6 +63,7 @@ dependencies {
                 // элементы располагаются относительно друг друга и границ родительского контейнера.
     implementation(libs.androidx.core.splashscreen)  //SplashScreen - первый экран, который
                                                     // пользователь видит при запуске приложения.
+    implementation(libs.lottie)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)

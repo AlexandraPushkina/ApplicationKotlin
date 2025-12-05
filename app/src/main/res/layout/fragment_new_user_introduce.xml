@@ -88,35 +88,35 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/topic_nature"
-            style="@style/Widget.MaterialComponents.Chip.Choice"
+            style="@style/CustomChipChoice"
             tools:visibility="visible" />
         <com.google.android.material.chip.Chip
             android:id="@+id/chipCosmetics"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/topic_cosmetics"
-            style="@style/Widget.MaterialComponents.Chip.Choice"
+            style="@style/CustomChipChoice"
             tools:visibility="visible" />
         <com.google.android.material.chip.Chip
             android:id="@+id/chipArt"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/topic_art"
-            style="@style/Widget.MaterialComponents.Chip.Choice"
+            style="@style/CustomChipChoice"
             tools:visibility="visible" />
         <com.google.android.material.chip.Chip
             android:id="@+id/chipSport"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/topic_sport"
-            style="@style/Widget.MaterialComponents.Chip.Choice"
+            style="@style/CustomChipChoice"
             tools:visibility="visible" />
         <com.google.android.material.chip.Chip
             android:id="@+id/chipFood"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/topic_food"
-            style="@style/Widget.MaterialComponents.Chip.Choice"
+            style="@style/CustomChipChoice"
             tools:visibility="visible" />
 
     </com.google.android.material.chip.ChipGroup>
@@ -128,7 +128,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="40dp"
         android:padding="12dp"
-        android:text="Продолжить"
+        android:text="@string/continue_option"
         app:layout_constraintEnd_toEndOf="@+id/tilBio"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/tilBio"
