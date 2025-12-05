@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:focusable="true"
+    android:clickable="true"
+    android:padding="16dp"
+    android:background="?android:attr/colorBackground">
+
+    <!-- 1. Имя пользователя (Сверху слева) -->
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/tvUsername"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColor="?attr/colorPrimary"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- 2. Надпись "Введите bio" -->
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/tvBioLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/bio_enter"
+        android:textSize="20sp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/tilBio"
+        app:layout_constraintStart_toStartOf="@+id/tilBio" />
+
+    <!-- 3. Поле для ввода Bio (Центрируем по вертикали, но сдвигаем чуть выше) -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/tilBio"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="@string/bio_tell_about_yourself"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.35"
+        app:layout_constraintWidth_percent="0.9">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etBio"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="top|start"
+            android:inputType="textMultiLine|textCapSentences"
+            android:lines="4"
+            android:maxLines="6" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- 4. Заголовок для тем (Ниже поля Bio) -->
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/tvTopicsLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="@string/topic_choose"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@+id/tilBio"
+        app:layout_constraintTop_toBottomOf="@+id/tilBio" />
+
+    <!-- 5. Группа чипов (список тем) -->
+    <!-- singleSelection="true" означает, что можно выбрать только один вариант -->
+    <com.google.android.material.chip.ChipGroup
+        android:id="@+id/chipGroupTopics"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        app:singleSelection="true"
+        app:selectionRequired="true"
+        app:layout_constraintEnd_toEndOf="@+id/tilBio"
+        app:layout_constraintStart_toStartOf="@+id/tilBio"
+        app:layout_constraintTop_toBottomOf="@+id/tvTopicsLabel">
+
+        <!-- Здесь программно (через Kotlin) нужно будет добавить Chip-ы.
+             Но для предпросмотра я добавил один пример (tools:visibility) -->
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chipNature"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/topic_nature"
+            style="@style/Widget.MaterialComponents.Chip.Choice"
+            tools:visibility="visible" />
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chipCosmetics"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/topic_cosmetics"
+            style="@style/Widget.MaterialComponents.Chip.Choice"
+            tools:visibility="visible" />
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chipArt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/topic_art"
+            style="@style/Widget.MaterialComponents.Chip.Choice"
+            tools:visibility="visible" />
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chipSport"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/topic_sport"
+            style="@style/Widget.MaterialComponents.Chip.Choice"
+            tools:visibility="visible" />
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chipFood"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/topic_food"
+            style="@style/Widget.MaterialComponents.Chip.Choice"
+            tools:visibility="visible" />
+
+    </com.google.android.material.chip.ChipGroup>
+
+    <!-- 6. Кнопка (Ниже списка тем) -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnSaveBio"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:padding="12dp"
+        android:text="Продолжить"
+        app:layout_constraintEnd_toEndOf="@+id/tilBio"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/tilBio"
+        app:layout_constraintTop_toBottomOf="@+id/chipGroupTopics" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

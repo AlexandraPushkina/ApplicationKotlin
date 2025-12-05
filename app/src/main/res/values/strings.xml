@@ -4,4 +4,14 @@
     <string name="nav_menu_feed">Лента</string>
     <string name="nav_menu_create_post">Создать</string>
     <string name="nav_menu_profile">Профиль</string>
+    <string name="bio_tell_about_yourself">Расскажи о себе</string>
+    <string name="continue_option">Продолжить</string>
+    <string name="bio_enter">Введите bio</string>
+    <string name="topic_nature">Природа🌿</string>
+    <string name="topic_art">Искусство🖼️</string>
+    <string name="topic_cosmetics">Декоративная косметика💅</string>
+    <string name="topic_sport">Спорт🏌️‍♀️</string>
+    <string name="topic_food">Еда🍝</string>
+    <string name="topic_choose">Выберите интересующую тему🍝</string>
+    <string name="topic_please_choose">Пожалуйста, выберите тему!</string>
 </resources>
