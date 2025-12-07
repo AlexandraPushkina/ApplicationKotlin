@@ -1,59 +1,60 @@
 package com.example.homework6
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.example.homework6.databinding.ActivityLoginBinding
 
 class LoginActivity : AppCompatActivity() {
 
-    // Объявляем переменную для View Binding
     private lateinit var binding: ActivityLoginBinding
-    private lateinit var dbHelper: DatabaseHelper
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        installSplashScreen()
+        installSplashScreen() // Экран заставки (если настроен)
+
         binding = ActivityLoginBinding.inflate(layoutInflater)
-        setContentView(binding.root)  //activity_login
+        setContentView(binding.root)
 
-        dbHelper = DatabaseHelper(this)
-
-        // Устанавливаем слушатель нажатий на кнопку
+        // Слушатель нажатия на кнопку "Далее" (или "Войти")
         binding.loginButton.setOnClickListener {
-            loginUser()
+            handleNextStep()
         }
     }
 
-    private fun loginUser() {
-        // Получаем текст из полей ввода
-        val email = binding.emailEditText.text.toString()
-        val password = binding.passwordEditText.text.toString()
+    private fun handleNextStep() {
 
-        // Проверяем email и пароль с помощью нашего валидатора
-        val emailError = AuthValidator.validateEmail(email)
+        // 1. Получаем данные
+        val username = binding.userNameEditText.text.toString().trim()
+        val password = binding.passwordEditText.text.toString().trim()
+
+        // 2. Валидация (проверка на пустоту, длину и т.д.)
+        val nameError = AuthValidator.validateUserName(username)
         val passwordError = AuthValidator.validatePassword(password)
 
-        // Показываем или убираем ошибки
-        binding.emailEditText.error = emailError
+        // Отображаем ошибки, если есть
+        binding.userNameEditText.error = nameError
         binding.passwordEditText.error = passwordError
 
-        if (emailError == null && passwordError == null) {
-        // 1. Создаем экземпляр фрагмента
-            val fragment = NewUserIntroduceFragment()
-
-        // 2. Упаковываем данные (email и пароль), чтобы передать их во фрагмент
-            val bundle = Bundle()  // упаковка (похожа на Структуру)
-            bundle.putString("user_email", email)
-            bundle.putString("user_password", password)
-            fragment.arguments = bundle
-
-         // 3. Открываем фрагмент
-            // R.id.fragment_container — это ID контейнера в activity_login.xml
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, fragment)
-                .addToBackStack(null) // Чтобы можно было вернуться назад кнопкой "Назад"
-                .commit()
+        // 3. Если ошибок нет — передаем данные дальше
+        if (nameError == null && passwordError == null) {
+            openIntroduceFragment(username, password)
         }
+    }
+
+    private fun openIntroduceFragment(username: String, pass: String) {
+        val fragment = NewUserIntroduceFragment()
+
+        // Упаковываем данные в структуру (Bundle), чтобы фрагмент их получил
+        val bundle = Bundle()
+        bundle.putString("user_name", username)
+        bundle.putString("user_password", pass)
+        fragment.arguments = bundle
+
+        // Открываем фрагмент
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, fragment)
+            .addToBackStack(null)
+            .commit()
     }
 }

@@ -4,7 +4,7 @@
     <string name="nav_menu_feed">Лента</string>
     <string name="nav_menu_create_post">Создать</string>
     <string name="nav_menu_profile">Профиль</string>
-    <string name="email">Email</string>
+    <string name="user_name">Имя пользователя</string>
     <string name="password">Пароль</string>
     <string name="enter">Войти</string>
     <string name="bio_tell_about_yourself">Расскажи о себе</string>

@@ -1,9 +1,7 @@
-import android.util.Patterns //Проверит шаблон на email
-
 // object означает, что нам не нужно будет создавать экземпляр этого класса
 object AuthValidator {
 
-    fun validateEmail(email: String): String? {
+    fun validateUserName(email: String): String? {
         val trimmedEmail = email.trim()
         //TODO: Проверки временно опущены
 //        return when {

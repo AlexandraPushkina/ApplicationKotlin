@@ -10,14 +10,14 @@
     android:padding="16dp"
     tools:context=".LoginActivity">
 
-    <!-- Контейнер для поля ввода "Email".
+    <!-- Контейнер для поля ввода "UserName".
          TextInputLayout добавляет красивые анимации для подсказок (hint) и отображение ошибок. -->
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/email_input_layout"
+        android:id="@+id/user_name_input_layout"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:hint="@string/email"
+        android:hint="@string/user_name"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -25,17 +25,17 @@
         <!-- Непосредственно само поле для ввода текста. -->
         <!-- id - уникальный идентификатор -->
         <!-- layout_width/height - Ширина зависит от родителя, высота от контента (может расширяться) -->
-        <!--inputType - Вводить email по готовому шаблону -->
+        <!--inputType - Вводить userName по готовому шаблону -->
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/email_edit_text"
+            android:id="@+id/user_name_edit_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="textEmailAddress" />
+            android:inputType="text" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
     <!-- Контейнер для поля ввода "Пароль". -->
-    <!-- toBottomOf - Верхняя граница до email". -->
+    <!-- toBottomOf - Верхняя граница до userName". -->
     <!-- toStartOf - Элемент начинается от родителя". -->
     <!-- toEndOf - Элемент начинается до родителя. -->
     <com.google.android.material.textfield.TextInputLayout
@@ -47,7 +47,7 @@
         android:hint="@string/password"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/email_input_layout">
+        app:layout_constraintTop_toBottomOf="@id/user_name_input_layout">
 
         <!-- Внутри теквтового контейнера элемент для ввода текста -->
         <com.google.android.material.textfield.TextInputEditText

@@ -3,50 +3,63 @@ package com.example.homework6
 import android.content.Context
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
+import com.example.homework6.data.AppDatabase
 import com.example.homework6.databinding.FragmentProfileBinding
+import kotlinx.coroutines.launch
 
 class ProfileFragment : Fragment(R.layout.fragment_profile) {
 
     private lateinit var binding: FragmentProfileBinding
-    private lateinit var dbHelper: DatabaseHelper
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentProfileBinding.bind(view)
-        dbHelper = DatabaseHelper(requireContext())
 
         loadUserProfile()
+
+        // TODO: Кнопка выхода (опционально, чтобы проверить логику)
+    //        binding.btnLogout?.setOnClickListener {
+    //            logout()
+    //        }
+
     }
 
     private fun loadUserProfile() {
-        // 1. Получаем сохраненный email пользователя из настроек
-        // (Мы предполагаем, что вы сохранили его при логине. Если нет - шаг 4)
+        // 1. Получаем сохраненный username (ключ должен совпадать с тем, что ты сохранял при Логине!)
         val sharedPref = requireActivity().getSharedPreferences("AppPrefs", Context.MODE_PRIVATE)
-        val email = sharedPref.getString("current_user_email", null)
+        val username = sharedPref.getString("current_user_name", null)
 
-        if (email != null) {
-            // 2. Делаем запрос в базу
-            val cursor = dbHelper.getUserProfile(email)
 
-            if (cursor != null && cursor.moveToFirst()) {
-                // 3. Достаем данные из курсора
-                val username = cursor.getString(0)
-                val bio = cursor.getString(1)
-                val topicName = cursor.getString(2)
+        // 2. Запускаем Корутину (асинхронный поток)
+        // В Room все запросы должны идти не в главном потоке, но lifecycleScope
+        // удобно переключает потоки за нас: запрос в фоне -> результат в UI.
+        viewLifecycleOwner.lifecycleScope.launch {
 
-                // 4. Заполняем UI
-                binding.tvUsername.text = username ?: "Неизвестный"
-                binding.tvBio.text = bio ?: "Биография не заполнена"
+            // Получаем доступ к DAO
+            val database = AppDatabase.getDatabase(requireContext())
+            val userDao = database.userDao()
 
-                // Если тема нашлась, ставим её, если нет - пишем "Без темы"
-                binding.chipTopic.text = topicName ?: "Без темы"
+            // 3. Делаем запрос (это suspend функция)
+            val userProfile = userDao.getUserProfile(username as String)
 
-                cursor.close()
+            // 4. Проверяем результат и обновляем UI
+            if (userProfile != null) {
+                binding.tvUsername.text = userProfile.username
+                binding.tvBio.text = userProfile.bio.ifEmpty { "Биография не заполнена" }
+                binding.chipTopic.text = userProfile.topicName // Room сам подтянул название темы!
+            } else {
+                showError("Пользователь не найден в базе")
             }
-        } else {
-            binding.tvUsername.text = "Ошибка входа"
-            binding.tvBio.text = "Пожалуйста, перезайдите в приложение"
         }
+    }
+
+    private fun showError(message: String) {
+        binding.tvUsername.text = "Ошибка"
+        binding.tvBio.text = message
+        binding.chipTopic.text = "---"
+        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
     }
 }
