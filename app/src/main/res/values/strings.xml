@@ -17,4 +17,5 @@
     <string name="topic_food">Еда🍝</string>
     <string name="topic_choose">Выберите интересующую тему🍝</string>
     <string name="topic_please_choose">Пожалуйста, выберите тему!</string>
+    <string name="profile_interests">Интересы</string>
 </resources>

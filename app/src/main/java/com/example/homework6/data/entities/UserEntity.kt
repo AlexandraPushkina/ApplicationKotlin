@@ -1,5 +1,6 @@
 package com.example.homework6.data.entities
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
@@ -11,5 +12,8 @@ data class UserEntity(
     val username: String,
     val password: String,
     val bio: String,
-    val topicId: Int // ID темы (1, 2, 3...)
+
+    // список из ID тем (1, 2, 3...)
+    @ColumnInfo(name = "topic_ids")
+    val topicId: String
 )

@@ -11,6 +11,7 @@ import com.example.homework6.data.AppDatabase
 import com.example.homework6.data.entities.UserEntity
 import com.example.homework6.databinding.FragmentNewUserIntroduceBinding
 import kotlinx.coroutines.launch
+import androidx.core.content.edit
 
 class NewUserIntroduceFragment : Fragment(R.layout.fragment_new_user_introduce) {
 
@@ -39,52 +40,59 @@ class NewUserIntroduceFragment : Fragment(R.layout.fragment_new_user_introduce) 
 
     private fun saveUserAndContinue() {
         val bioText = binding.etBio.text.toString().trim()
-        val selectedChipId = binding.chipGroupTopics.checkedChipId
 
-        if (selectedChipId == View.NO_ID) {
-            Toast.makeText(requireContext(), "Пожалуйста, выберите тему!", Toast.LENGTH_SHORT).show()
+        // Получаем список ID всех нажатых чипов
+        val selectedChipIds = binding.chipGroupTopics.checkedChipIds
+
+        if (selectedChipIds.isEmpty()) {
+            Toast.makeText(requireContext(), "Пожалуйста, выберите хотя бы одну тему!", Toast.LENGTH_SHORT).show()
             return
         }
 
-        // Сопоставляем ID чипа с ID в таблице topics
-        val topicDatabaseId = when (selectedChipId) {
-            R.id.chipNature -> 1
-            R.id.chipArt -> 2
-            R.id.chipCosmetics -> 3
-            R.id.chipSport -> 4
-            R.id.chipFood -> 5
-            else -> 1
+        // Создаем список для хранения ID тем (тех, которые для БД: 1, 2, 3...)
+        val dbTopicIdsList = mutableListOf<Int>()
+
+        // Проходимся по каждому выбранному чипу и конвертируем его ID в ID темы
+        for (chipId in selectedChipIds) {
+            val topicId = when (chipId) {
+                R.id.chipNature -> 1
+                R.id.chipArt -> 2
+                R.id.chipCosmetics -> 3
+                R.id.chipSport -> 4
+                R.id.chipFood -> 5
+                else -> null // Игнорируем неизвестные (на всякий случай)
+            }
+            if (topicId != null) {
+                dbTopicIdsList.add(topicId)
+            }
         }
+
+        // Превращаем список чисел [1, 4, 5] в строку "1,4,5"
+        val topicIdsString = dbTopicIdsList.joinToString(separator = ",")
 
         if (username != null && password != null) {
 
-            // Запускаем корутину для работы с Room
             viewLifecycleOwner.lifecycleScope.launch {
 
-                // Создаем объект. id = 0, чтобы Room сам сгенерировал новый
+                // Создаем юзера с новой строкой тем
                 val newUser = UserEntity(
                     id = 0,
                     username = username!!,
                     password = password!!,
                     bio = bioText,
-                    topicId = topicDatabaseId
+                    topicId = topicIdsString // Передаем строку
                 )
 
-                // Получаем БД и вставляем (без проверок, просто добавляем запись)
                 val db = AppDatabase.getDatabase(requireContext())
                 db.userDao().insertUser(newUser)
 
-                // --- УСПЕШНО СОХРАНЕНО ---
-
-                // Сохраняем имя текущего пользователя в настройки (для Профиля)
+                // --- УСПЕШНО ---
                 val sharedPref = requireActivity().getSharedPreferences("AppPrefs", Context.MODE_PRIVATE)
-                sharedPref.edit().putString("current_user_name", username).apply()
+                sharedPref.edit { putString("current_user_name", username) }
 
                 Toast.makeText(requireContext(), "Регистрация завершена!", Toast.LENGTH_SHORT).show()
 
-                // Переход на главный экран (MainActivity)
                 val intent = Intent(requireContext(), MainActivity::class.java)
-                // Очищаем стек (чтобы нельзя было вернуться назад на экран регистрации)
                 intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                 startActivity(intent)
             }

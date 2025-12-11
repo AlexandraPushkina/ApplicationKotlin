@@ -24,42 +24,65 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
     //        binding.btnLogout?.setOnClickListener {
     //            logout()
     //        }
-
     }
 
     private fun loadUserProfile() {
-        // 1. Получаем сохраненный username (ключ должен совпадать с тем, что ты сохранял при Логине!)
         val sharedPref = requireActivity().getSharedPreferences("AppPrefs", Context.MODE_PRIVATE)
         val username = sharedPref.getString("current_user_name", null)
 
+        if (username == null) return
 
-        // 2. Запускаем Корутину (асинхронный поток)
-        // В Room все запросы должны идти не в главном потоке, но lifecycleScope
-        // удобно переключает потоки за нас: запрос в фоне -> результат в UI.
         viewLifecycleOwner.lifecycleScope.launch {
+            val db = AppDatabase.getDatabase(requireContext())
 
-            // Получаем доступ к DAO
-            val database = AppDatabase.getDatabase(requireContext())
-            val userDao = database.userDao()
+            // 1. Получаем пользователя
+            val user = db.userDao().getUser(username)
 
-            // 3. Делаем запрос (это suspend функция)
-            val userProfile = userDao.getUserProfile(username as String)
+            // 2. Получаем список всех возможных тем
+            val allTopics = db.topicDao().getAllTopics()
 
-            // 4. Проверяем результат и обновляем UI
-            if (userProfile != null) {
-                binding.tvUsername.text = userProfile.username
-                binding.tvBio.text = userProfile.bio.ifEmpty { "Биография не заполнена" }
-                binding.chipTopic.text = userProfile.topicName // Room сам подтянул название темы!
+            if (user != null) {
+                // Заполняем текстовые поля
+                binding.tvUsername.text = user.username
+                binding.tvBio.text = user.bio.ifEmpty { "Биография не заполнена" }
+
+                // --- ЛОГИКА ЧИПОВ ---
+
+                // 1. Очищаем группу перед добавлением
+                binding.chipGroupInterests.removeAllViews()
+
+                // 2. Парсим строку в список чисел []
+                val userTopicIds = user.topicId.split(",")
+                    .filter { it.isNotEmpty() }
+                    .map { it.toInt() }
+
+                // 3. Бежим по всем существующим темам
+                for (topic in allTopics) {
+                    // Если ID этой темы есть в списке у пользователя
+                    if (userTopicIds.contains(topic.id)) {
+                        // Создаем чип и добавляем на экран
+                        addChipToGroup(topic.name)
+                    }
+                }
+
             } else {
-                showError("Пользователь не найден в базе")
+                Toast.makeText(requireContext(), "Пользователь не найден", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
-    private fun showError(message: String) {
-        binding.tvUsername.text = "Ошибка"
-        binding.tvBio.text = message
-        binding.chipTopic.text = "---"
-        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+    // Вспомогательная функция для создания Чипа
+    private fun addChipToGroup(topicName: String) {
+        val chip = com.google.android.material.chip.Chip(requireContext())
+        chip.text = topicName
+        chip.isClickable = false
+        chip.isCheckable = false
+        chip.setChipBackgroundColorResource(android.R.color.transparent)
+        chip.setChipStrokeColorResource(com.google.android.material.R.color.material_on_surface_stroke)
+        chip.chipStrokeWidth = 1f // толщина рамки (нужно конвертировать в пиксели, но для теста сойдет)
+
+        // Добавляем в ChipGroup
+        binding.chipGroupInterests.addView(chip)
     }
+
 }

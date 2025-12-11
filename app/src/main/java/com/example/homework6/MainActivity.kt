@@ -2,9 +2,14 @@ package com.example.homework6
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
+import com.example.homework6.data.AppDatabase
+import com.example.homework6.data.test_data.generateTestPosts
 import com.example.homework6.databinding.ActivityMainBinding
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
 
@@ -22,5 +27,18 @@ class MainActivity : AppCompatActivity() {
         // Связываем NavController с нашей BottomNavigationView
         // Эта одна строка автоматически обрабатывает все нажатия!
         binding.bottomNavView.setupWithNavController(navController)
+
+        val db = AppDatabase.getDatabase(this)
+
+        // Запускаем корутину (в фоновом потоке IO)
+        lifecycleScope.launch(Dispatchers.IO) {
+            val count = db.postDao().getCount()
+
+            // Если постов нет (равно 0), то загружаем наши тестовые посты
+            if (count != 0) {
+                val testPosts = generateTestPosts()
+                db.postDao().insertAll(testPosts)
+            }
+        }
     }
 }

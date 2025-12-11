@@ -7,13 +7,15 @@ import com.example.homework6.data.entities.UserEntity
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 
+//Временно не используется
+
 class UserViewModel(private val dao: UserDao) : ViewModel() {
 
     // Получаем поток данных из базы. Compose будет следить за ним.
     val allUsers: Flow<List<UserEntity>> = dao.getAllUsersFlow()
 
     // Функция добавления (запускаем в lifecycleScope)
-    fun addUser(username: String, password: String, bio: String, topic: Int) {
+    fun addUser(username: String, password: String, bio: String, topic: String) {
 
         if (username.isNotBlank()) {
             viewModelScope.launch {

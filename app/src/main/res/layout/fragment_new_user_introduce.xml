@@ -75,7 +75,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        app:singleSelection="true"
+        app:singleSelection="false"
         app:selectionRequired="true"
         app:layout_constraintEnd_toEndOf="@+id/tilBio"
         app:layout_constraintStart_toStartOf="@+id/tilBio"
