@@ -106,7 +106,7 @@ fun generateTestPosts(): List<PostEntity> {
         ),
         // Пост 10: Спорт (4)
         PostEntity(
-            id = 4,
+            id = 10,
             userId = 1,
             topicIds = "4",
             authorName = defaultAuthor,
@@ -117,7 +117,7 @@ fun generateTestPosts(): List<PostEntity> {
 
         // Пост 11: Косметика (2)
         PostEntity(
-            id = 5,
+            id = 11,
             userId = 1,
             topicIds = "2",
             authorName = defaultAuthor,
@@ -128,7 +128,7 @@ fun generateTestPosts(): List<PostEntity> {
 
         // Пост 12: Искусство (3)
         PostEntity(
-            id = 6,
+            id = 12,
             userId = 1,
             topicIds = "3",
             authorName = defaultAuthor,
@@ -139,7 +139,7 @@ fun generateTestPosts(): List<PostEntity> {
 
         // Пост 13: Природа (1)
         PostEntity(
-            id = 7,
+            id = 13,
             userId = 1,
             topicIds = "1",
             authorName = defaultAuthor,
