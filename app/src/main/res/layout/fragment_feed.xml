@@ -24,6 +24,6 @@
         android:focusable="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@drawable/ic_fab_profile" />
+        app:srcCompat="@drawable/ic_fab_create" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

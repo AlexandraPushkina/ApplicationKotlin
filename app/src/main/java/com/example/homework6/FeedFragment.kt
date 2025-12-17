@@ -32,7 +32,8 @@ class FeedFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         setupRecyclerView()
         binding.fabProfile.setOnClickListener {
-            findNavController().navigate(R.id.profileFragment)
+            // переносит через navigate на Создание поста
+            findNavController().navigate(R.id.createPostFragment)
         }
     }
 
@@ -65,11 +66,46 @@ class FeedFragment : Fragment() {
                 postTopicIds.any { it in userInterests }
             }
 
-            // 4. Обновляем UI
+            // Обновляем UI
             withContext(Dispatchers.Main) {
-                // Создаем адаптер уже с отфильтрованным списком
-                val adapter = PostsAdapter(filteredPosts)
+                // Создаем адаптер уже с отфильтрованным списком и передаем функцию, что делать
+                // при клике (параметр - выбранный пост)
+                val adapter = PostsAdapter(filteredPosts) { selectedPost ->
+                    val dialog = DialogPostDetailFragment.newInstance(selectedPost)
+                    dialog.show(parentFragmentManager, "PostDetail")
+                }
                 binding.recyclerViewFeed.adapter = adapter
+
+                // --- TODO: ПЕРЕМЕЩЕНИЕ ---
+                val callback = object : androidx.recyclerview.widget.ItemTouchHelper.SimpleCallback(
+                    // Разрешаем таскать во все стороны (так как у нас сетка/Grid)
+                    androidx.recyclerview.widget.ItemTouchHelper.UP or androidx.recyclerview.widget.ItemTouchHelper.DOWN or
+                            androidx.recyclerview.widget.ItemTouchHelper.LEFT or androidx.recyclerview.widget.ItemTouchHelper.RIGHT,
+                    0 // 0 означает, что смахивание (swipe) отключено
+                ) {
+                    override fun onMove(
+                        recyclerView: androidx.recyclerview.widget.RecyclerView,
+                        viewHolder: androidx.recyclerview.widget.RecyclerView.ViewHolder,
+                        target: androidx.recyclerview.widget.RecyclerView.ViewHolder
+                    ): Boolean {
+                        val fromPos = viewHolder.bindingAdapterPosition
+                        val toPos = target.bindingAdapterPosition
+
+                        // Вызываем метод перемещения в адаптере
+                        adapter.onItemMove(fromPos, toPos)
+                        return true
+                    }
+
+                    override fun onSwiped(viewHolder: androidx.recyclerview.widget.RecyclerView.ViewHolder, direction: Int) {
+                        // Смахивание не нужно
+                    }
+                }
+
+                // Прикрепляем помощника к нашему списку
+                val itemTouchHelper = androidx.recyclerview.widget.ItemTouchHelper(callback)
+                itemTouchHelper.attachToRecyclerView(binding.recyclerViewFeed)
+                // --- КОНЕЦ ПЕРЕМЕЩЕНИЕ ---
+
             }
         }
     }

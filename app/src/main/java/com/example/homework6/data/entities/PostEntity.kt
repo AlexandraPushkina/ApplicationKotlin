@@ -1,10 +1,13 @@
 package com.example.homework6.data.entities
 
+import android.os.Parcelable
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
+import kotlinx.parcelize.Parcelize
 
+@Parcelize
 @Entity(
     tableName = "posts",
     foreignKeys = [
@@ -38,4 +41,4 @@ data class PostEntity(
 
     @ColumnInfo(name = "image_url")
     val imageUrl: String? = null
-)
+) : Parcelable

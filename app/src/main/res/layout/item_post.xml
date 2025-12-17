@@ -21,7 +21,6 @@
             android:paddingHorizontal="8dp"
             android:paddingTop="8dp"
             android:paddingBottom="4dp"
-            tools:text="Vladislav"
             android:textSize="10sp"
             android:textColor="@android:color/darker_gray"
             android:textStyle="bold"/>

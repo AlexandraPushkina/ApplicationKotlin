@@ -18,4 +18,8 @@
     <string name="topic_choose">Выберите интересующую тему🍝</string>
     <string name="topic_please_choose">Пожалуйста, выберите тему!</string>
     <string name="profile_interests">Интересы</string>
+    <string name="new_post">Новый пост</string>
+    <string name="new_post_header">Заголовок *</string>
+    <string name="new_post_url_ref">Ссылка на картинку (URL)</string>
+    <string name="new_post_text">Текст поста</string>
 </resources>

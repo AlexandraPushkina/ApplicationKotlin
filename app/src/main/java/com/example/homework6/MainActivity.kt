@@ -34,8 +34,9 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launch(Dispatchers.IO) {
             val count = db.postDao().getCount()
 
-            // Если постов нет (равно 0), то загружаем наши тестовые посты
-            if (count != 0) {
+            // Если постов нет (равно 0), то загружаем тестовые посты
+            if (count == 0) {
+                db.postDao().deleteAll()
                 val testPosts = generateTestPosts()
                 db.postDao().insertAll(testPosts)
             }

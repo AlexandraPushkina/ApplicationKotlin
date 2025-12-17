@@ -18,6 +18,9 @@ interface PostDao {
     @Query("SELECT COUNT(*) FROM posts")
     suspend fun getCount(): Int
 
+    @Query("DELETE FROM posts")
+    suspend fun deleteAll()
+
     // Вставить список постов
     // onConflict = REPLACE значит: если пост с ID=1 уже есть, он обновится
     @Insert(onConflict = OnConflictStrategy.REPLACE)
