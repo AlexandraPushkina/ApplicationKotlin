@@ -6,18 +6,21 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
-import com.example.homework6.data.AppDatabase
-import com.example.homework6.data.entities.UserEntity
 import com.example.homework6.databinding.FragmentNewUserIntroduceBinding
-import kotlinx.coroutines.launch
 import androidx.core.content.edit
+import androidx.fragment.app.viewModels
+import com.example.homework6.viewmodels.AppViewModelFactory
+import com.example.homework6.viewmodels.NewUserIntroduceViewModel
 
 class NewUserIntroduceFragment : Fragment(R.layout.fragment_new_user_introduce) {
 
     private lateinit var binding: FragmentNewUserIntroduceBinding
 
-    // Переменные для данных
+    // Подключаем ViewModel
+    private val viewModel: NewUserIntroduceViewModel by viewModels {
+        AppViewModelFactory(requireActivity().application)
+    }
+
     private var username: String? = null
     private var password: String? = null
 
@@ -25,23 +28,45 @@ class NewUserIntroduceFragment : Fragment(R.layout.fragment_new_user_introduce) 
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentNewUserIntroduceBinding.bind(view)
 
-        // 1. Достаем данные.
+        // 1. Достаем аргументы
         username = arguments?.getString("user_name")
         password = arguments?.getString("user_password")
 
-        // 2. Отображаем имя
         binding.tvUsername.text = username ?: "Пользователь"
 
-        // 3. Кнопка сохранения
+        // 2. ПОДПИСЫВАЕМСЯ на успех
+        viewModel.registrationSuccess.observe(viewLifecycleOwner) {
+            // Сохраняем сессию в SharedPreferences
+            val sharedPref = requireActivity().getSharedPreferences("AppPrefs", Context.MODE_PRIVATE)
+            sharedPref.edit { putString("current_user_name", username) }
+
+            Toast.makeText(requireContext(), "Регистрация завершена!", Toast.LENGTH_SHORT).show()
+
+            // Переход на главный экран
+            val intent = Intent(requireContext(), MainActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+        }
+
+        // 3. ПОДПИСЫВАЕМСЯ на ошибки
+        viewModel.error.observe(viewLifecycleOwner) { errorMessage ->
+            Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_SHORT).show()
+        }
+
+        // 4. Обработка нажатия
         binding.btnSaveBio.setOnClickListener {
-            saveUserAndContinue()
+            prepareAndSave()
         }
     }
 
-    private fun saveUserAndContinue() {
-        val bioText = binding.etBio.text.toString().trim()
+    private fun prepareAndSave() {
+        // Проверки на null
+        if (username == null || password == null) {
+            Toast.makeText(requireContext(), "Ошибка: нет данных пользователя", Toast.LENGTH_SHORT).show()
+            return
+        }
 
-        // Получаем список ID всех нажатых чипов
+        val bioText = binding.etBio.text.toString().trim()
         val selectedChipIds = binding.chipGroupTopics.checkedChipIds
 
         if (selectedChipIds.isEmpty()) {
@@ -49,10 +74,9 @@ class NewUserIntroduceFragment : Fragment(R.layout.fragment_new_user_introduce) 
             return
         }
 
-        // Создаем список для хранения ID тем (тех, которые для БД: 1, 2, 3...)
+        // Собираем список ID тем (UI -> Data)
         val dbTopicIdsList = mutableListOf<Int>()
 
-        // Проходимся по каждому выбранному чипу и конвертируем его ID в ID темы
         for (chipId in selectedChipIds) {
             val topicId = when (chipId) {
                 R.id.chipNature -> 1
@@ -60,44 +84,19 @@ class NewUserIntroduceFragment : Fragment(R.layout.fragment_new_user_introduce) 
                 R.id.chipCosmetics -> 3
                 R.id.chipSport -> 4
                 R.id.chipFood -> 5
-                else -> null // Игнорируем неизвестные (на всякий случай)
+                else -> null
             }
             if (topicId != null) {
                 dbTopicIdsList.add(topicId)
             }
         }
 
-        // Превращаем список чисел [1, 4, 5] в строку "1,4,5"
-        val topicIdsString = dbTopicIdsList.joinToString(separator = ",")
-
-        if (username != null && password != null) {
-
-            viewLifecycleOwner.lifecycleScope.launch {
-
-                // Создаем юзера с новой строкой тем
-                val newUser = UserEntity(
-                    id = 0,
-                    username = username!!,
-                    password = password!!,
-                    bio = bioText,
-                    topicId = topicIdsString // Передаем строку
-                )
-
-                val db = AppDatabase.getDatabase(requireContext())
-                db.userDao().insertUser(newUser)
-
-                // --- УСПЕШНО ---
-                val sharedPref = requireActivity().getSharedPreferences("AppPrefs", Context.MODE_PRIVATE)
-                sharedPref.edit { putString("current_user_name", username) }
-
-                Toast.makeText(requireContext(), "Регистрация завершена!", Toast.LENGTH_SHORT).show()
-
-                val intent = Intent(requireContext(), MainActivity::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                startActivity(intent)
-            }
-        } else {
-            Toast.makeText(requireContext(), "Ошибка передачи данных", Toast.LENGTH_SHORT).show()
-        }
+        // ОТПРАВЛЯЕМ ВО VIEWMODEL
+        viewModel.registerUser(
+            username = username!!,
+            password = password!!,
+            bio = bioText,
+            topicIds = dbTopicIdsList
+        )
     }
 }

@@ -18,7 +18,7 @@ class DialogPostDetailFragment : DialogFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // Делаем диалог полноэкранным
-        setStyle(STYLE_NORMAL, com.google.android.material.R.style.Theme_Material3_DayNight_NoActionBar)
+        setStyle(STYLE_NORMAL, R.style.Theme_Homework6)
     }
 
     override fun onCreateView(
