@@ -23,7 +23,7 @@ class FeedViewModel(private val db: AppDatabase) : ViewModel() {
             val allPosts = db.postDao().getAllPosts()
 
             // 2. Берем интересы пользователя
-            val user = db.userDao().getUser(username) ?: return@launch
+            val user = db.userDao().getUserByEmail(username) ?: return@launch
 
             val userInterests = user.topicId
                 .split(",")

@@ -1,27 +1,23 @@
+import android.util.Patterns
+
 // object означает, что нам не нужно будет создавать экземпляр этого класса
 object AuthValidator {
 
-    fun validateUserName(email: String): String? {
+    fun validateEmail(email: String): String? {
         val trimmedEmail = email.trim()
-        //TODO: Проверки временно опущены
-//        return when {
-//            trimmedEmail.isEmpty() -> "Поле не может быть пустым"
-//            !Patterns.EMAIL_ADDRESS.matcher(trimmedEmail).matches() -> "Некорректный формат email"
-//            else -> null // Ошибки нет
-//        }
-        return null
+        return when {
+            trimmedEmail.isEmpty() -> "Введите email"
+            !Patterns.EMAIL_ADDRESS.matcher(trimmedEmail).matches() -> "Некорректный формат почты"
+            else -> null // Ошибок нет
+        }
     }
 
 
     fun validatePassword(password: String): String? {
-
-        //TODO: Проверки временно опущены
-//        return when {
-//            password.isEmpty() -> "Поле не может быть пустым"
-//            password.length < 8 -> "Пароль должен содержать не менее 8 символов"
-//            else -> null // Ошибки нет
-//        }
-//    }
-        return null
+        return when {
+            password.isEmpty() -> "Введите пароль"
+            password.length < 6 -> "Пароль слишком короткий (минимум 6 символов)"
+            else -> null
+        }
     }
 }

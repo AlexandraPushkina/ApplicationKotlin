@@ -1,7 +1,5 @@
 package com.example.homework6.viewmodels
 
-import android.os.Bundle
-import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -27,7 +25,7 @@ class CreatePostViewModel(private val db: AppDatabase) : ViewModel() {
                    username: String) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                val user = db.userDao().getUser(username) ?: return@launch
+                val user = db.userDao().getUserByEmail(username) ?: return@launch
 
                     val newPost = PostEntity(id = 0,
                         userId = user.id.toLong(),

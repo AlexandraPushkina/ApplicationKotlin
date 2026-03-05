@@ -22,4 +22,7 @@
     <string name="new_post_header">Заголовок *</string>
     <string name="new_post_url_ref">Ссылка на картинку (URL)</string>
     <string name="new_post_text">Текст поста</string>
+    <string name="login">Зарегистрироваться</string>
+    <string name="forgot_password">Забыли пароль?</string>
+
 </resources>

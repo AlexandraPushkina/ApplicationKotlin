@@ -24,7 +24,7 @@ class ProfileViewModel(private val db: AppDatabase) : ViewModel() {
     fun loadProfile(username: String) {
         viewModelScope.launch(Dispatchers.IO) {
             // А. Грузим пользователя
-            val user = db.userDao().getUser(username)
+            val user = db.userDao().getUserByEmail(username)
 
             // Если пользователя нет — выходим
             if (user == null) return@launch

@@ -3,6 +3,7 @@ package com.example.homework6
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import com.example.homework6.data.userDao
 import com.example.homework6.databinding.ActivityLoginBinding
 
 class LoginActivity : AppCompatActivity() {
@@ -20,35 +21,58 @@ class LoginActivity : AppCompatActivity() {
         binding.loginButton.setOnClickListener {
             handleNextStep()
         }
+
+        binding.registerButton.setOnClickListener {
+            openIntroduceFragment()
+        }
     }
 
     private fun handleNextStep() {
 
         // 1. Получаем данные
-        val username = binding.userNameEditText.text.toString().trim()
-        val password = binding.passwordEditText.text.toString().trim()
+        val userEmail = binding.userNameEditText.text.toString().trim()
+        val password = binding.passwordEditText.text.toString()
 
         // 2. Валидация (проверка на пустоту, длину и т.д.)
-        val nameError = AuthValidator.validateUserName(username)
+        val emailError = AuthValidator.validateEmail(userEmail)
         val passwordError = AuthValidator.validatePassword(password)
 
         // Отображаем ошибки, если есть
-        binding.userNameEditText.error = nameError
+        binding.userNameEditText.error = emailError
         binding.passwordEditText.error = passwordError
 
         // 3. Если ошибок нет — передаем данные дальше
-        if (nameError == null && passwordError == null) {
-            openIntroduceFragment(username, password)
+        if (emailError == null && passwordError == null) {
+            performLogin(userEmail, password)
         }
     }
 
-    private fun openIntroduceFragment(username: String, pass: String) {
+    suspend fun performLogin(email: String, pass: String) {
+        // Используем метод из вашего DAO
+        val user = userDao.getUserByEmail(email)
+
+        if (user == null) {
+            // Почта не найдена
+            showErrorMessage("Неверные данные для входа")
+        } else if (user.password != pass) {
+            // Пароль не совпал
+            showErrorMessage("Неверные данные для входа")
+        } else {
+            // Успешный вход! Переходим на главную
+            navigateToMain(user.id)
+        }
+    }
+
+    private fun openIntroduceFragment() {
+        val userEmail = binding.userNameEditText.text.toString().trim()
+        val password = binding.passwordEditText.text.toString()
+
         val fragment = NewUserIntroduceFragment()
 
         // Упаковываем данные в структуру (Bundle), чтобы фрагмент их получил
         val bundle = Bundle()
-        bundle.putString("user_name", username)
-        bundle.putString("user_password", pass)
+        bundle.putString("user_name", userEmail)
+        bundle.putString("user_password", password)
         fragment.arguments = bundle
 
         // Открываем фрагмент

@@ -9,7 +9,7 @@ import kotlinx.coroutines.launch
 
 //Временно не используется
 
-class UserViewModel(private val dao: UserDao) : ViewModel() {
+class UserViewModel(private val dao: userDao) : ViewModel() {
 
     // Получаем поток данных из базы. Compose будет следить за ним.
     val allUsers: Flow<List<UserEntity>> = dao.getAllUsersFlow()
@@ -38,7 +38,7 @@ class UserViewModel(private val dao: UserDao) : ViewModel() {
 }
 
 // Фабрика нужна, чтобы передать DAO в конструктор ViewModel
-class UserViewModelFactory(private val dao: UserDao) : ViewModelProvider.Factory {
+class UserViewModelFactory(private val dao: userDao) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(UserViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")

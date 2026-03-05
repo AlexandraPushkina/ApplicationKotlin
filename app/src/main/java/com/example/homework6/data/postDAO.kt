@@ -31,3 +31,6 @@ interface PostDao {
     suspend fun insert(post: PostEntity)
 
 }
+
+interface UserInterestDao {
+}

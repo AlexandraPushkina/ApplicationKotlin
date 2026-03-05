@@ -14,7 +14,7 @@ import com.example.homework6.data.entities.UserEntity
 abstract class AppDatabase : RoomDatabase() {
 
     // 2. Объявляем абстрактный метод для получения DAO
-    abstract fun userDao(): UserDao
+    abstract fun userDao(): userDao
     abstract fun topicDao(): TopicDao
     abstract fun postDao(): PostDao
 

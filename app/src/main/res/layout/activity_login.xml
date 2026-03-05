@@ -70,6 +70,36 @@
         app:layout_constraintTop_toBottomOf="@id/password_input_layout"
         />
 
+    <!-- Кнопка "Забыли пароль?" -->
+    <!-- Стиль TextButton убирает фон и оставляет только текст -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/forgot_password_button"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="7dp"
+        android:text="@string/forgot_password"
+        android:textColor="#6200EE"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/login_button" />
+
+    <!-- Кнопка "Зарегистрироваться" -->
+    <!-- Стиль OutlinedButton создает рамку без заливки -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/register_button"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:text="@string/login"
+        android:textColor="#6200EE"
+        app:strokeColor="#6200EE"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+
 
 
 
@@ -82,12 +112,12 @@
 
     <com.airbnb.lottie.LottieAnimationView
         android:id="@+id/animationView"
-        android:layout_width="300dp"
-        android:layout_height="500dp"
-        android:layout_marginTop="32dp"
-        app:layout_constraintBottom_toBottomOf="@+id/fragment_container"
+        android:layout_width="200dp"
+        android:layout_height="400dp"
+        app:layout_constraintBottom_toTopOf="@+id/register_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/forgot_password_button"
         app:lottie_autoPlay="true"
         app:lottie_loop="true"
         app:lottie_rawRes="@raw/login_hello_anim" />
