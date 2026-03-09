@@ -38,7 +38,7 @@ class ProfileFragment : Fragment() {
         // 1. ПОДПИСЫВАЕМСЯ на данные пользователя (Имя, Био)
         viewModel.userProfile.observe(viewLifecycleOwner) { user ->
             binding.tvUsername.text = user.username
-            binding.tvBio.text = user.bio.ifEmpty { "Биография не заполнена" }
+            binding.tvBio.text = user.bio?.ifEmpty { "Биография не заполнена" }
         }
 
         // 2. ПОДПИСЫВАЕМСЯ на список тем (Чипы)

@@ -8,6 +8,7 @@ import com.example.homework6.data.AppDatabase
 import com.example.homework6.data.entities.PostEntity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import com.example.homework6.FeedRankingUseCase
 
 class FeedViewModel(private val db: AppDatabase) : ViewModel() {
 
@@ -17,28 +18,25 @@ class FeedViewModel(private val db: AppDatabase) : ViewModel() {
     val posts: LiveData<List<PostEntity>> = _posts
 
     // Функция загрузки данных
-    fun loadPosts(username: String) {
+    fun loadPosts(userEmail: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            // 1. Берем посты
+
+            // 1. Находим пользователя
+            val user = db.userDao().getUserByEmail(userEmail) ?: return@launch
+
+            // 2. Получаем сырые данные из базы
             val allPosts = db.postDao().getAllPosts()
+            val userInterestsList = db.UserInterestsDao().getUserInterests(user.id)
 
-            // 2. Берем интересы пользователя
-            val user = db.userDao().getUserByEmail(username) ?: return@launch
+            // 3. Подготавливаем словарь весов { TopicId = Weight }
+            val interestWeightsMap = userInterestsList.associate { it.topicId to it.weight }
 
-            val userInterests = user.topicId
-                .split(",")
-                .map { it.trim().toInt() }
+            // 4. МАГИЯ ЗДЕСЬ: Отдаем сырые данные нашему UseCase и получаем умную ленту
+            val smartFeed = FeedRankingUseCase()
+            val feedCurrentUser = smartFeed.invoke(allPosts, interestWeightsMap)
 
-            // 3. Фильтруем
-            val filteredPosts = allPosts.filter { post ->
-                val postTopicIds = post.topicIds
-                    .split(",")
-                    .map { it.trim().toInt() }
-                postTopicIds.any { it in userInterests }
-            }
-
-            // 4. Кладем результат в LiveData (postValue безопасно вызывает обновление на UI потоке)
-            _posts.postValue(filteredPosts)
+            // 5. Отправляем во Фрагмент
+            _posts.postValue(feedCurrentUser)
         }
     }
 }

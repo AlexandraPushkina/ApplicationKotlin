@@ -9,20 +9,22 @@ import kotlinx.coroutines.launch
 
 //Временно не используется
 
-class UserViewModel(private val dao: userDao) : ViewModel() {
+class UserViewModel(private val dao: UserDao) : ViewModel() {
 
     // Получаем поток данных из базы. Compose будет следить за ним.
     val allUsers: Flow<List<UserEntity>> = dao.getAllUsersFlow()
 
     // Функция добавления (запускаем в lifecycleScope)
-    fun addUser(username: String, password: String, bio: String, topic: String) {
+    fun addUser(useremail: String,password: String, username: String,  bio: String) {
 
         if (username.isNotBlank()) {
             viewModelScope.launch {
                 dao.insertUser(
                     UserEntity(
-                        username = username, password = password,
-                        bio = bio, topicId = topic
+                        useremail = useremail,
+                        password = password,
+                        username = username,
+                        bio = bio
                     )
                 )
             }
@@ -30,15 +32,15 @@ class UserViewModel(private val dao: userDao) : ViewModel() {
     }
 
     // Функция удаления
-    fun deleteUser(user: UserEntity) {
+    fun deleteUser(userId: Int) {
         viewModelScope.launch {
-            dao.deleteUser(user)
+            dao.deactivateUser(userId)
         }
     }
 }
 
 // Фабрика нужна, чтобы передать DAO в конструктор ViewModel
-class UserViewModelFactory(private val dao: userDao) : ViewModelProvider.Factory {
+class UserViewModelFactory(private val dao: UserDao) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(UserViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")

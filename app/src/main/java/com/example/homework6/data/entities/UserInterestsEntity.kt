@@ -22,7 +22,7 @@ import androidx.room.ForeignKey
         )
     ]
 )
-data class UserInterestEntity(
+data class UserInterestsEntity(
     @ColumnInfo(name = "user_id")
     val userId: Int,
 

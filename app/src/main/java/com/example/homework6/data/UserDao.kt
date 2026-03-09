@@ -9,12 +9,12 @@ import com.example.homework6.data.entities.UserEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface userDao {
+interface UserDao {
 
     // Вставка пользователя.
     // OnConflictStrategy.ABORT выдаст исключение, если почта уже зарегистрирована
     @Insert(onConflict = OnConflictStrategy.ABORT)
-    suspend fun insertUser(user: UserEntity)
+    suspend fun insertUser(user: UserEntity): Long
 
     @Update
     suspend fun updateUser(user: UserEntity)
@@ -25,21 +25,26 @@ interface userDao {
     @Query("SELECT * FROM users WHERE id = :id LIMIT 1")
     suspend fun getUserById(id: Int): UserEntity?
 
+    @Query("SELECT * FROM users WHERE useremail = :useremail AND password = :password LIMIT 1")
+    suspend fun checkUserByEmailAndPassword(useremail: String, password: String): UserEntity?
+
     // Анонимизация профиля, вместо удаления. Остается только id
     @Query("""
         UPDATE users 
-        SET useremail = NULL, 
-            username = 'Удаленный профиль', 
+        SET useremail = '', 
+            username = 'Удаленный пользователь', 
             password = '', 
-            bio = '', 
-            topic_ids = '' 
+            bio = null, 
+            isDeleted = 1
         WHERE id = :userId
     """)
-    suspend fun anonymizeUser(userId: Int)
+    suspend fun deactivateUser(userId: Int)
 
     // Существует ли профиль
     @Query("SELECT EXISTS(SELECT 1 FROM users WHERE useremail = :email)")
     suspend fun isEmailTaken(email: String): Boolean
+
+
 
 
 

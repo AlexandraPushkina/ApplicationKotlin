@@ -2,7 +2,6 @@ package com.example.homework6.data
 
 import com.example.homework6.data.entities.PostEntity
 import androidx.room.Dao
-import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -29,6 +28,10 @@ interface PostDao {
     // Вставить один пост
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(post: PostEntity)
+
+    @Query("UPDATE posts SET author_name = 'УдаленныйПользователь_' || :userId " +
+            "WHERE user_id = :userId")
+    suspend fun anonymizeUserPosts(userId: Long)
 
 }
 

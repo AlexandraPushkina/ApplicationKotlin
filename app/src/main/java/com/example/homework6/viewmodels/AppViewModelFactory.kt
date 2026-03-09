@@ -23,8 +23,8 @@ class AppViewModelFactory(private val application: Application) : ViewModelProvi
         if (modelClass.isAssignableFrom(MainViewModel::class.java)) {
             return MainViewModel(db) as T
         }
-        if (modelClass.isAssignableFrom(NewUserIntroduceViewModel::class.java)) {
-            return NewUserIntroduceViewModel(db) as T
+        if (modelClass.isAssignableFrom(RegisterUserViewModel::class.java)) {
+            return RegisterUserViewModel(db) as T
         }
 
         throw IllegalArgumentException("Unknown ViewModel class")

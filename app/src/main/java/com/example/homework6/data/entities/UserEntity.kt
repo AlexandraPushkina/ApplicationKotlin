@@ -13,12 +13,9 @@ data class UserEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
 
-    val useremail: String?,
-    val username: String?,
-    val password: String?,
+    val useremail: String,
+    val username: String,
+    val password: String,
     val bio: String?,
-
-    // список из ID тем (1, 2, 3...)
-    @ColumnInfo(name = "topic_ids")
-    val topicId: String?
+    val isDeleted: Boolean = false,
 )
