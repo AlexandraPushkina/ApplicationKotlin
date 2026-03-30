@@ -8,8 +8,12 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.example.homework6.R
+import com.example.homework6.data.entities.UserEntity
 import com.example.homework6.databinding.FragmentProfileBinding
+import com.example.homework6.extensions.EXTRA_USER_ID
 import com.example.homework6.viewmodels.AppViewModelFactory
 import com.example.homework6.viewmodels.ProfileViewModel
 
@@ -17,6 +21,7 @@ class ProfileFragment : Fragment() {
 
     private var _binding: FragmentProfileBinding? = null
     private val binding get() = _binding!!
+
 
     // Подключаем ViewModel
     private val viewModel: ProfileViewModel by viewModels {
@@ -53,11 +58,10 @@ class ProfileFragment : Fragment() {
         }
 
         // 3. ЗАПУСКАЕМ ЗАГРУЗКУ
-        val sharedPref = requireActivity().getSharedPreferences("AppPrefs", Context.MODE_PRIVATE)
-        val username = sharedPref.getString("current_user_name", null)
+        val userId = requireActivity().intent.getIntExtra(EXTRA_USER_ID, -1)
 
-        if (username != null) {
-            viewModel.loadProfile(username)
+        if (userId != null) {
+            viewModel.loadProfile(userId)
         } else {
             Toast.makeText(context, "Ошибка: пользователь не найден", Toast.LENGTH_SHORT).show()
         }

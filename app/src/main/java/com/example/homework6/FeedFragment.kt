@@ -3,6 +3,7 @@ package com.example.homework6
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -44,32 +45,46 @@ class FeedFragment : Fragment() {
 
         // Пытаемся достать userId, который передавали в MainActivity
         val userId = requireActivity().intent.getIntExtra(EXTRA_USER_ID, -1)
+        Log.d("MyFeedDebug", "1. Получен userId из Intent: $userId")
 
         // Если юзера нет, то выходим на экрна регистрации
         if (userId == -1) {
             kickUserOut("Ошибка сессии. Пожалуйста, войдите снова.")
             return
         }
+        // Создание адаптера для (пока что пустой) ленты постов. Ждем обновления данных
+        val postsAdapter = PostsAdapter(mutableListOf()) { selectedPost ->
+            val dialog = DialogPostDetailFragment.newInstance(selectedPost)
+            dialog.show(parentFragmentManager, "PostDetail")
+        }
+
+        binding.recyclerViewFeed.adapter = postsAdapter
+
 
         // 3. Подписываемся на список постов
         viewModel.posts.observe(viewLifecycleOwner) { loadedPosts ->
+            Log.d("MyFeedDebug", "4. Пришел список постов. Размер списка: ${loadedPosts.size}")
             // Когда посты загрузятся, создаем адаптер и показываем их
-            val adapter = PostsAdapter(loadedPosts.toMutableList()) { selectedPost ->
-                val dialog = DialogPostDetailFragment.newInstance(selectedPost)
-                dialog.show(parentFragmentManager, "PostDetail")
-            }
-            binding.recyclerViewFeed.adapter = adapter
+            binding.recyclerViewFeed.adapter =
+                PostsAdapter(loadedPosts.toMutableList()) { selectedPost ->
+                    val dialog = DialogPostDetailFragment.newInstance(selectedPost)
+                    dialog.show(parentFragmentManager, "PostDetail")
+                }
         }
 
         // 4. Подписываемся на данные пользователя из БД
         viewModel.currentUser.observe(viewLifecycleOwner) { user ->
             if (user == null) {
+                Log.d("MyFeedDebug", "3. ОШИБКА: База данных вернула null для юзера!")
                 // Если база данных вернула пустоту (например, юзера удалили из БД)
                 kickUserOut("Пользователь не найден в базе данных.")
             } else {
-                viewModel.loadPosts(user.username)
+                Log.d("MyFeedDebug", "3. Юзер найден в БД! Имя: ${user.username}. Идем искать посты...")
+                viewModel.loadPosts(user.id)
             }
         }
+        Log.d("MyFeedDebug", "2. Даем команду ViewModel искать юзера с id = $userId")
+        viewModel.getUser(userId)
     }
 
     private fun kickUserOut(message: String) {

@@ -21,57 +21,59 @@ class ProfileViewModel(private val db: AppDatabase) : ViewModel() {
     val topicNames: LiveData<List<String>> = _topicNames
 
     // Функция загрузки
-    fun loadProfile(userEmail: String) {
+    fun loadProfile(userId: Int) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 // 1. Грузим пользователя из базы
-                val user = db.userDao().getUserByEmail(userEmail)
+                val user = fetchUser(userId)
 
                 // Если пользователя нет — прерываем работу корутины
-                if (user == null) {
+                if (user == null)
                     return@launch
-                }
 
                 // Отправляем пользователя в UI (Фрагмент получит имя и био)
                 _userProfile.postValue(user)
 
-                // 2. Достаем ВСЕ интересы этого пользователя
-                val allUserInterests = db.UserInterestsDao().getUserInterests(user.id)
-
-                // 3. Отбираем только те ID тем, которые вес > 0
-                val positiveTopicIds = mutableListOf<Int>()
-
-                for (interest in allUserInterests) {
-                    if (interest.weight > 0) {
-                        positiveTopicIds.add(interest.topicId)
-                    }
-                }
-
-                // Г. Грузим ВСЕ темы из базы данных (чтобы узнать их текстовые названия)
-                // Примечание: Убедитесь, что у вас в TopicDao метод называется именно так и
-                // возвращает List<TopicEntity> (то есть объекты с id и name)
-                val allTopics = db.topicDao().getAllTopicsList()
-
-                // Д. Формируем финальный список названий
-                val finalTopicNames = mutableListOf<String>()
-
-                // Перебираем все темы из базы.
-                // Если ID темы есть в нашем списке "положительных" интересов — берем её название.
-                for (topic in allTopics) {
-                    if (positiveTopicIds.contains(topic.id)) {
-                        finalTopicNames.add(topic.name)
-                    }
-                }
-
-                // Е. Отправляем готовый список названий в UI
-                _topicNames.postValue(finalTopicNames)
-
+                // Загружаем его интересы
+                fetchAndProcessInterests(userId)
             } catch (e: Exception) {
-                // В случае любой ошибки при работе с БД, отправляем пустой список,
-                // чтобы приложение не упало
+                // Защита от краша при сбоях БД
                 _topicNames.postValue(emptyList())
             }
         }
+    }
+
+        private suspend fun fetchUser(userId: Int): UserEntity? {
+            return db.userDao().getUserById(userId)
+        }
+
+    private suspend fun fetchAndProcessInterests(userId: Int) {
+        // Достаем все интересы юзера
+        // (Обратите внимание: userInterestsDao обычно пишется с маленькой буквы)
+        val allUserInterests = db.UserInterestsDao().getUserInterests(userId)
+
+        // Оставляем только те, где вес > 0, и берем только их ID
+        // (Функции filter и map делают код короче и избавляют от циклов for)
+        val positiveTopicIds = allUserInterests
+            .filter { it.weight > 0 }
+            .map { it.topicId }
+
+        // Если положительных интересов нет, сразу отправляем пустой список и выходим
+        if (positiveTopicIds.isEmpty()) {
+            _topicNames.postValue(emptyList())
+            return
+        }
+
+        // Грузим все темы
+        val allTopics = db.topicDao().getAllTopicsList()
+
+        // Находим названия нужных тем
+        val finalTopicNames = allTopics
+            .filter { positiveTopicIds.contains(it.id) }
+            .map { it.name }
+
+        // Отправляем готовый список названий во Фрагмент
+        _topicNames.postValue(finalTopicNames)
     }
 }
 

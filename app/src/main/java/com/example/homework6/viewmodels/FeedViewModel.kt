@@ -22,31 +22,37 @@ class FeedViewModel(private val db: AppDatabase) : ViewModel() {
     val currentUser: LiveData<UserEntity?> = _currentUser
 
     // Функция загрузки данных
-    fun loadPosts(userEmail: String) {
+    fun loadPosts(userId: Int) {
         viewModelScope.launch(Dispatchers.IO) {
+            try {
+                // Шаг 1 (Поиск юзера) мы УДАЛЯЕМ. Он нам больше не нужен,
+                // так как мы уже передали точный userId напрямую.
 
-            // 1. Находим пользователя
-            val user = db.userDao().getUserByEmail(userEmail) ?: return@launch
+                // 2. Получаем сырые данные из базы
+                val allPosts = db.postDao().getAllPosts()
+                // Сразу используем переданный userId
+                val userInterestsList = db.UserInterestsDao().getUserInterests(userId)
 
-            // 2. Получаем сырые данные из базы
-            val allPosts = db.postDao().getAllPosts()
-            val userInterestsList = db.UserInterestsDao().getUserInterests(user.id)
+                // 3. Подготавливаем словарь весов { TopicId = Weight }
+                val interestWeightsMap = userInterestsList.associate { it.topicId to it.weight }
 
-            // 3. Подготавливаем словарь весов { TopicId = Weight }
-            val interestWeightsMap = userInterestsList.associate { it.topicId to it.weight }
+                // 4. МАГИЯ ЗДЕСЬ: Отдаем сырые данные нашему UseCase
+                val smartFeed = FeedRankingUseCase()
+                val feedCurrentUser = smartFeed.invoke(allPosts, interestWeightsMap)
 
-            // 4. МАГИЯ ЗДЕСЬ: Отдаем сырые данные нашему UseCase и получаем умную ленту
-            val smartFeed = FeedRankingUseCase()
-            val feedCurrentUser = smartFeed.invoke(allPosts, interestWeightsMap)
+                // 5. Отправляем во Фрагмент
+                _posts.postValue(feedCurrentUser)
 
-            // 5. Отправляем во Фрагмент
-            _posts.postValue(feedCurrentUser)
+            } catch (e: Exception) {
+                // На всякий случай ловим ошибки БД, чтобы приложение не упало
+                _posts.postValue(emptyList())
+            }
         }
     }
-    fun getUserById(userId: Int) {
-        viewModelScope.launch(Dispatchers.IO) {
-            val user = db.userDao().getUserById(userId)
-            _currentUser.postValue(user)
+        fun getUser(userId: Int) {
+            viewModelScope.launch(Dispatchers.IO) {
+                val user = db.userDao().getUserById(userId)
+                _currentUser.postValue(user)
+            }
         }
     }
-}
