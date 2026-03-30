@@ -1,0 +1,58 @@
+package com.example.homework6.viewmodels
+
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.homework6.data.AppDatabase
+import com.example.homework6.data.entities.PostEntity
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import com.example.homework6.FeedRankingUseCase
+import com.example.homework6.data.entities.UserEntity
+
+class FeedViewModel(private val db: AppDatabase) : ViewModel() {
+
+    // "Ящик", в который мы положим готовый список постов.
+    // Фрагмент будет смотреть на этот ящик.
+    private val _posts = MutableLiveData<List<PostEntity>>()
+    val posts: LiveData<List<PostEntity>> = _posts
+
+    private val _currentUser = MutableLiveData<UserEntity?>()
+    val currentUser: LiveData<UserEntity?> = _currentUser
+
+    // Функция загрузки данных
+    fun loadPosts(userId: Int) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                // Шаг 1 (Поиск юзера) мы УДАЛЯЕМ. Он нам больше не нужен,
+                // так как мы уже передали точный userId напрямую.
+
+                // 2. Получаем сырые данные из базы
+                val allPosts = db.postDao().getAllPosts()
+                // Сразу используем переданный userId
+                val userInterestsList = db.UserInterestsDao().getUserInterests(userId)
+
+                // 3. Подготавливаем словарь весов { TopicId = Weight }
+                val interestWeightsMap = userInterestsList.associate { it.topicId to it.weight }
+
+                // 4. МАГИЯ ЗДЕСЬ: Отдаем сырые данные нашему UseCase
+                val smartFeed = FeedRankingUseCase()
+                val feedCurrentUser = smartFeed.invoke(allPosts, interestWeightsMap)
+
+                // 5. Отправляем во Фрагмент
+                _posts.postValue(feedCurrentUser)
+
+            } catch (e: Exception) {
+                // На всякий случай ловим ошибки БД, чтобы приложение не упало
+                _posts.postValue(emptyList())
+            }
+        }
+    }
+        fun getUser(userId: Int) {
+            viewModelScope.launch(Dispatchers.IO) {
+                val user = db.userDao().getUserById(userId)
+                _currentUser.postValue(user)
+            }
+        }
+    }

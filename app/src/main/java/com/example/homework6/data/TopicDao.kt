@@ -7,6 +7,9 @@ import com.example.homework6.data.entities.TopicEntity
 @Dao
 interface TopicDao {
     // Названия тем
+    @Query("SELECT id FROM topics")
+    suspend fun getAllTopicsIds(): List<Int>
+
     @Query("SELECT * FROM topics")
-    suspend fun getAllTopics(): List<TopicEntity>
+    suspend fun getAllTopicsList():List<TopicEntity>
 }

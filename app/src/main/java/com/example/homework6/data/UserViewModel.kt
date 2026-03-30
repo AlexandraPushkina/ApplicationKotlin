@@ -15,14 +15,16 @@ class UserViewModel(private val dao: UserDao) : ViewModel() {
     val allUsers: Flow<List<UserEntity>> = dao.getAllUsersFlow()
 
     // Функция добавления (запускаем в lifecycleScope)
-    fun addUser(username: String, password: String, bio: String, topic: String) {
+    fun addUser(useremail: String,password: String, username: String,  bio: String) {
 
         if (username.isNotBlank()) {
             viewModelScope.launch {
                 dao.insertUser(
                     UserEntity(
-                        username = username, password = password,
-                        bio = bio, topicId = topic
+                        useremail = useremail,
+                        password = password,
+                        username = username,
+                        bio = bio
                     )
                 )
             }
@@ -30,9 +32,9 @@ class UserViewModel(private val dao: UserDao) : ViewModel() {
     }
 
     // Функция удаления
-    fun deleteUser(user: UserEntity) {
+    fun deleteUser(userId: Int) {
         viewModelScope.launch {
-            dao.deleteUser(user)
+            dao.deactivateUser(userId)
         }
     }
 }

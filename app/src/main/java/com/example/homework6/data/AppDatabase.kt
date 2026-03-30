@@ -8,15 +8,21 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.homework6.data.entities.PostEntity
 import com.example.homework6.data.entities.TopicEntity
 import com.example.homework6.data.entities.UserEntity
+import com.example.homework6.data.entities.UserInterestsEntity
 
 // 1. Указываем ВСЕ сущности (таблицы), которые есть в базе
-@Database(entities = [UserEntity::class, TopicEntity::class, PostEntity::class], version = 1, exportSchema = false)
+@Database(entities = [UserEntity::class,
+                    TopicEntity::class,
+                    PostEntity::class,
+                    UserInterestsEntity::class],
+    version = 1, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
 
     // 2. Объявляем абстрактный метод для получения DAO
     abstract fun userDao(): UserDao
     abstract fun topicDao(): TopicDao
     abstract fun postDao(): PostDao
+    abstract fun UserInterestsDao(): UserInterestsDao
 
     // 3. Создаем Singleton (чтобы база открывалась только один раз)
     companion object {
