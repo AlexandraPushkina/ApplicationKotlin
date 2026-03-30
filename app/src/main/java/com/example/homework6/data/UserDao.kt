@@ -28,6 +28,9 @@ interface UserDao {
     @Query("SELECT * FROM users WHERE useremail = :useremail AND password = :password LIMIT 1")
     suspend fun checkUserByEmailAndPassword(useremail: String, password: String): UserEntity?
 
+    @Query("SELECT id FROM users WHERE useremail = :useremail")
+    suspend fun getUserId(useremail: String): Int?
+
     // Анонимизация профиля, вместо удаления. Остается только id
     @Query("""
         UPDATE users 

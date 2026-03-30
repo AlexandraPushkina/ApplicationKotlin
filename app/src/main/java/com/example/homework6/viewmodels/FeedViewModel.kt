@@ -9,6 +9,7 @@ import com.example.homework6.data.entities.PostEntity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import com.example.homework6.FeedRankingUseCase
+import com.example.homework6.data.entities.UserEntity
 
 class FeedViewModel(private val db: AppDatabase) : ViewModel() {
 
@@ -16,6 +17,9 @@ class FeedViewModel(private val db: AppDatabase) : ViewModel() {
     // Фрагмент будет смотреть на этот ящик.
     private val _posts = MutableLiveData<List<PostEntity>>()
     val posts: LiveData<List<PostEntity>> = _posts
+
+    private val _currentUser = MutableLiveData<UserEntity?>()
+    val currentUser: LiveData<UserEntity?> = _currentUser
 
     // Функция загрузки данных
     fun loadPosts(userEmail: String) {
@@ -37,6 +41,12 @@ class FeedViewModel(private val db: AppDatabase) : ViewModel() {
 
             // 5. Отправляем во Фрагмент
             _posts.postValue(feedCurrentUser)
+        }
+    }
+    fun getUserById(userId: Int) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val user = db.userDao().getUserById(userId)
+            _currentUser.postValue(user)
         }
     }
 }

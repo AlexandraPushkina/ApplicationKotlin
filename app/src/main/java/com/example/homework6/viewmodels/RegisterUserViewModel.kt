@@ -15,8 +15,8 @@ import kotlinx.coroutines.launch
 class RegisterUserViewModel(private val db: AppDatabase) : ViewModel() {
 
     // Сигнал об успешной регистрации
-    private val _registrationSuccess = MutableLiveData<Unit>()
-    val registrationSuccess: LiveData<Unit> = _registrationSuccess
+    private val _registrationSuccess = MutableLiveData<Int>()
+    val registrationSuccess: LiveData<Int> = _registrationSuccess
 
     // Сигнал об ошибке
     private val _error = MutableLiveData<String>()
@@ -26,8 +26,7 @@ class RegisterUserViewModel(private val db: AppDatabase) : ViewModel() {
                      password: String,
                      username: String,
                      bio: String,
-                     topicIds: List<Int>,
-                     onSuccess: (Int) -> Unit) {
+                     topicIds: List<Int>) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 // 1. Создаем юзера
@@ -50,7 +49,7 @@ class RegisterUserViewModel(private val db: AppDatabase) : ViewModel() {
 
                     // Проверяем: есть ли текущая тема в списке тех, что выбрал юзер?
                     val initialWeight = if (topicIds.contains(currentTopicId)) {
-                        InteractionWeights.REGISTER_CHOICE
+                        REGISTER_CHOICE
                     } else {
                         InteractionWeights.NEUTRAL
                     }
@@ -66,7 +65,7 @@ class RegisterUserViewModel(private val db: AppDatabase) : ViewModel() {
                     db.UserInterestsDao().insertInterests(initialInterests)
                 }
 
-                _registrationSuccess.postValue(Unit)
+                _registrationSuccess.postValue(insertedUserId) // ожидаем id пользователя
 
             } catch (e: Exception) {
                 _error.postValue("Ошибка регистрации: ${e.message}")

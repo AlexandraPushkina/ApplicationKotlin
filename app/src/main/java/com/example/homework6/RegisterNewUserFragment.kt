@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.core.content.edit
 import androidx.fragment.app.viewModels
 import com.example.homework6.databinding.FragmentNewUserRegisterBinding
+import com.example.homework6.extensions.EXTRA_USER_ID
 import com.example.homework6.viewmodels.AppViewModelFactory
 import com.example.homework6.viewmodels.RegisterUserViewModel
 import com.example.homework6.extensions.showErrorMessage
@@ -100,17 +101,18 @@ class RegisterNewUserFragment : Fragment(R.layout.fragment_new_user_register) {
                 bio = userBio,
                 topicIds = dbTopicIdsList
             )
-
-            navigateToMainScreen()
+            viewModel.registrationSuccess.observe(viewLifecycleOwner){
+                newUserId ->  navigateToMainScreen(newUserId)
+            }
 
         } else {
             showErrorMessage("Данные неккоректны")
         }
     }
-    private fun navigateToMainScreen() {
+    private fun navigateToMainScreen(userId: Int) {
         val intent = Intent(requireContext(), MainActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        intent.putExtra(MainActivity.EXTRA_USER_ID, id_нового_пользователя) //Передаем id в MainActivity
+        intent.putExtra(EXTRA_USER_ID, userId) //Передаем id в MainActivity
         startActivity(intent)
     }
 
