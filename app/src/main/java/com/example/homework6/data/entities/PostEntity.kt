@@ -31,9 +31,6 @@ data class PostEntity(
     @ColumnInfo(name = "user_id")
     val userId: Long,
 
-    @ColumnInfo(name = "topic_ids")
-    val topicIds: String,
-
     @ColumnInfo(name = "author_name")
     val authorName: String,
 

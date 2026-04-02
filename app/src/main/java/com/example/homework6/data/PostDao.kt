@@ -5,9 +5,15 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
+import com.example.homework6.data.entities.PostWithTopics
 
 @Dao
 interface PostDao {
+
+    @Transaction
+    @Query("SELECT * FROM posts WHERE id = :postId")
+    suspend fun getPost(postId: Long): PostWithTopics?
 
     // Получить все посты из таблицы 'posts'
     @Query("SELECT * FROM posts")
