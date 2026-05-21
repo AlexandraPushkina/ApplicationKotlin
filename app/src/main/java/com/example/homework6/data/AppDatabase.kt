@@ -6,16 +6,21 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.homework6.data.entities.PostEntity
+import com.example.homework6.data.entities.PostTopicEntity
 import com.example.homework6.data.entities.TopicEntity
+import com.example.homework6.data.entities.TopicWithPosts
 import com.example.homework6.data.entities.UserEntity
 import com.example.homework6.data.entities.UserInterestsEntity
+import com.example.homework6.data.entities.PostTopicCrossRef
 
 // 1. Указываем ВСЕ сущности (таблицы), которые есть в базе
 @Database(entities = [UserEntity::class,
                     TopicEntity::class,
                     PostEntity::class,
-                    UserInterestsEntity::class],
-    version = 1, exportSchema = false)
+                    UserInterestsEntity::class,
+                    PostTopicEntity::class,
+                    PostTopicCrossRef::class],
+    version = 2, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
 
     // 2. Объявляем абстрактный метод для получения DAO

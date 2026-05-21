@@ -62,7 +62,7 @@ class FeedFragment : Fragment() {
 
 
         // 3. Подписываемся на список постов
-        viewModel.posts.observe(viewLifecycleOwner) { loadedPosts ->
+        viewModel.feedPosts.observe(viewLifecycleOwner) { loadedPosts ->
             Log.d("MyFeedDebug", "4. Пришел список постов. Размер списка: ${loadedPosts.size}")
             // Когда посты загрузятся, создаем адаптер и показываем их
             binding.recyclerViewFeed.adapter =

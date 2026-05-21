@@ -26,10 +26,10 @@ import kotlinx.parcelize.Parcelize
 )
 data class PostEntity(
     @PrimaryKey(autoGenerate = true)
-    val id: Long = 0,
+    val id: Int = 0,
 
     @ColumnInfo(name = "user_id")
-    val userId: Long,
+    val userId: Int,
 
     @ColumnInfo(name = "author_name")
     val authorName: String,

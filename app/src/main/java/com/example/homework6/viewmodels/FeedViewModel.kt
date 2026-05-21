@@ -9,50 +9,40 @@ import com.example.homework6.data.entities.PostEntity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import com.example.homework6.FeedRankingUseCase
+import com.example.homework6.PostRepository
+import com.example.homework6.data.UserDao
 import com.example.homework6.data.entities.UserEntity
 
-class FeedViewModel(private val db: AppDatabase) : ViewModel() {
+class FeedViewModel(
+    private val userDao: UserDao, // Добавляем DAO для работы с юзером
+    private val feedRankingUseCase: FeedRankingUseCase
+) : ViewModel() {
 
-    // "Ящик", в который мы положим готовый список постов.
-    // Фрагмент будет смотреть на этот ящик.
-    private val _posts = MutableLiveData<List<PostEntity>>()
-    val posts: LiveData<List<PostEntity>> = _posts
-
+    // Стримы данных для фрагмента
     private val _currentUser = MutableLiveData<UserEntity?>()
     val currentUser: LiveData<UserEntity?> = _currentUser
 
-    // Функция загрузки данных
+    private val _feedPosts = MutableLiveData<List<PostEntity>>()
+    val feedPosts: LiveData<List<PostEntity>> = _feedPosts
+
+    // 1. Получаем пользователя по ID
+    fun getUser(userId: Int) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val user = userDao.getUserById(userId)
+            _currentUser.postValue(user)
+        }
+    }
+
+    // 2. Загружаем посты, учитывая веса (интересы) пользователя
     fun loadPosts(userId: Int) {
         viewModelScope.launch(Dispatchers.IO) {
-            try {
-                // Шаг 1 (Поиск юзера) мы УДАЛЯЕМ. Он нам больше не нужен,
-                // так как мы уже передали точный userId напрямую.
+            // Сначала получаем пользователя, чтобы достать его веса
+            val user = userDao.getUserById(userId)
+            val weights = user?.interests ?: emptyMap() // Предполагаем, что веса хранятся в поле interests
 
-                // 2. Получаем сырые данные из базы
-                val allPosts = db.postDao().getAllPosts()
-                // Сразу используем переданный userId
-                val userInterestsList = db.UserInterestsDao().getUserInterests(userId)
-
-                // 3. Подготавливаем словарь весов { TopicId = Weight }
-                val interestWeightsMap = userInterestsList.associate { it.topicId to it.weight }
-
-                // 4. МАГИЯ ЗДЕСЬ: Отдаем сырые данные нашему UseCase
-                val smartFeed = FeedRankingUseCase()
-                val feedCurrentUser = smartFeed.invoke(allPosts, interestWeightsMap)
-
-                // 5. Отправляем во Фрагмент
-                _posts.postValue(feedCurrentUser)
-
-            } catch (e: Exception) {
-                // На всякий случай ловим ошибки БД, чтобы приложение не упало
-                _posts.postValue(emptyList())
-            }
+            // Вызываем UseCase для ранжирования ленты
+            val result = feedRankingUseCase(weights)
+            _feedPosts.postValue(result)
         }
     }
-        fun getUser(userId: Int) {
-            viewModelScope.launch(Dispatchers.IO) {
-                val user = db.userDao().getUserById(userId)
-                _currentUser.postValue(user)
-            }
-        }
-    }
+}

@@ -6,6 +6,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
+import com.example.homework6.data.entities.PostTopicCrossRef
 import com.example.homework6.data.entities.PostWithTopics
 
 @Dao
@@ -17,7 +18,7 @@ interface PostDao {
 
     // Получить все посты из таблицы 'posts'
     @Query("SELECT * FROM posts")
-    suspend fun getAllPosts(): List<PostEntity>
+    suspend fun getAllPosts(): List<PostWithTopics>
 
     // Посчитать количество постов
     @Query("SELECT COUNT(*) FROM posts")
@@ -33,13 +34,13 @@ interface PostDao {
 
     // Вставить один пост
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(post: PostEntity)
+    suspend fun insert(post: PostEntity): Long
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertPostTopics(crossRefs: List<PostTopicCrossRef>)
 
     @Query("UPDATE posts SET author_name = 'УдаленныйПользователь_' || :userId " +
             "WHERE user_id = :userId")
     suspend fun anonymizeUserPosts(userId: Long)
 
-}
-
-interface UserInterestDao {
 }

@@ -77,6 +77,23 @@
             android:layout_height="match_parent"
             android:gravity="top"
             android:inputType="textMultiLine" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/choose_topics"
+            android:layout_marginTop="16dp"
+            android:paddingStart="4dp"/>
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/chipGroupTopics"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            app:chipSpacingHorizontal="8dp"
+            app:chipSpacingVertical="4dp" />
+
+
     </com.google.android.material.textfield.TextInputLayout>
 
     <!-- Кнопка создания -->

@@ -7,27 +7,27 @@ import androidx.room.Index
 
 @Entity(
     tableName = "post_topic",
-    primaryKeys = ["postId", "topicId"],
+    primaryKeys = ["post_id", "topic_id"],
     foreignKeys = [
         ForeignKey(
             entity = PostEntity::class,
             parentColumns = ["id"],
-            childColumns = ["postId"],
+            childColumns = ["post_id"],
             onDelete = ForeignKey.CASCADE  // удалили пост — удалились строки связки
         ),
         ForeignKey(
             entity = TopicEntity::class,
             parentColumns = ["id"],
-            childColumns = ["topicId"],
+            childColumns = ["topic_id"],
             onDelete = ForeignKey.CASCADE
         )
     ],
     indices = [
-        Index(value = ["postId"]),
-        Index(value = ["topicId"])
+        Index(value = ["post_id"]),
+        Index(value = ["topic_id"])
     ]
 )
 data class PostTopicEntity(
-    @ColumnInfo(name = "postId") val postId: Long,
-    @ColumnInfo(name = "topicId") val topicId: Int
+    @ColumnInfo(name = "post_id") val postId: Int,
+    @ColumnInfo(name = "topic_id") val topicId: Int
 )
