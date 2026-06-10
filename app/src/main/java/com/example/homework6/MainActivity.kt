@@ -3,6 +3,7 @@ package com.example.homework6
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.viewModels
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
@@ -26,6 +27,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         val userId = intent.getIntExtra(EXTRA_USER_ID, -1)
+        Log.d("DEBUG_DB", "User ID is: $userId")
         if (userId != -1) {
         // 1. Настройка навигации
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment

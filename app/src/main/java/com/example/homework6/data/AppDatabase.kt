@@ -1,6 +1,7 @@
 package com.example.homework6.data
 
 import android.content.Context
+import android.util.Log
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
@@ -20,7 +21,7 @@ import com.example.homework6.data.entities.PostTopicCrossRef
                     UserInterestsEntity::class,
                     PostTopicEntity::class,
                     PostTopicCrossRef::class],
-    version = 2, exportSchema = false)
+    version = 6, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
 
     // 2. Объявляем абстрактный метод для получения DAO
@@ -35,34 +36,13 @@ abstract class AppDatabase : RoomDatabase() {
         private var INSTANCE: AppDatabase? = null
 
         fun getDatabase(context: Context): AppDatabase {
-            // Если экземпляр уже есть — возвращаем его
             return INSTANCE ?: synchronized(this) {
-                // Если нет — создаем новый
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     AppDatabase::class.java,
-                    "my_app_database" // Имя файла базы данных на телефоне
+                    "my_app_database"
                 )
-                    // ДАННЫЕ ПРИ СТАРТЕ
-                    .addCallback(object : RoomDatabase.Callback() {
-                        // Метод onCreate вызывается ТОЛЬКО ОДИН РАЗ,
-                        // когда приложение запускается впервые и файла базы еще нет.
-                        override fun onCreate(db: SupportSQLiteDatabase) {
-                            super.onCreate(db)
-
-                            // Заполняем таблицу topics жесткими значениями
-                            // id = 1 -> Природа
-                            db.execSQL("INSERT INTO topics (id, name) VALUES (1, 'Природа')")
-                            // id = 2 -> Искусство
-                            db.execSQL("INSERT INTO topics (id, name) VALUES (2, 'Искусство')")
-                            // id = 3 -> Косметика
-                            db.execSQL("INSERT INTO topics (id, name) VALUES (3, 'Косметика')")
-                            // id = 4 -> Спорт
-                            db.execSQL("INSERT INTO topics (id, name) VALUES (4, 'Спорт')")
-                            // id = 5 -> Еда
-                            db.execSQL("INSERT INTO topics (id, name) VALUES (5, 'Еда')")
-                        }
-                    })
+                    .fallbackToDestructiveMigration()
                     .build()
                 INSTANCE = instance
                 instance

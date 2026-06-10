@@ -4,7 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.homework6.data.AppDatabase
 import com.example.homework6.data.entities.PostEntity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -15,7 +14,8 @@ import com.example.homework6.data.entities.UserEntity
 
 class FeedViewModel(
     private val userDao: UserDao, // Добавляем DAO для работы с юзером
-    private val feedRankingUseCase: FeedRankingUseCase
+    private val feedRankingUseCase: FeedRankingUseCase,
+    private val repository: PostRepository
 ) : ViewModel() {
 
     // Стримы данных для фрагмента
@@ -36,11 +36,7 @@ class FeedViewModel(
     // 2. Загружаем посты, учитывая веса (интересы) пользователя
     fun loadPosts(userId: Int) {
         viewModelScope.launch(Dispatchers.IO) {
-            // Сначала получаем пользователя, чтобы достать его веса
-            val user = userDao.getUserById(userId)
-            val weights = user?.interests ?: emptyMap() // Предполагаем, что веса хранятся в поле interests
-
-            // Вызываем UseCase для ранжирования ленты
+            val weights = repository.getUserWeights(userId)
             val result = feedRankingUseCase(weights)
             _feedPosts.postValue(result)
         }

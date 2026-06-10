@@ -1,7 +1,7 @@
 package com.example.homework6.data.entities
 
 // DTO для ROOM, чтобы получать значения полей. Возвращает из запроса 1 объект, который содержит
-// пост и его темы. Таблица-перемычка
+// пост и его темы. Таблица-перемычка. Не таблица, а результат запроса (объединение)
 
 import androidx.room.Embedded
 import androidx.room.Junction

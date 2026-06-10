@@ -28,7 +28,7 @@ class CreatePostViewModel(private val repository: PostRepository) : ViewModel() 
                    content: String,
                    imageUrl: String?,
                    username: String,
-                   topicIds: List<Int>) {
+                   topicIds: List<Long>) {
         if (topicIds.isEmpty()) {
             _error.postValue("Выберите хотя бы одну тему")
             return

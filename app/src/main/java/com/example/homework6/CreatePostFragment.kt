@@ -92,7 +92,7 @@ class CreatePostFragment : Fragment() {
         val title = binding.etTitle.text.toString().trim()
         val content = binding.etContent.text.toString().trim()
         val imageUrl = binding.etImageUrl.text.toString().trim()
-        val selectedTopicIds = binding.chipGroupTopics.checkedChipIds
+        val selectedTopicIds: List<Long> = binding.chipGroupTopics.checkedChipIds.map { it.toLong() }
 
         // Валидация: Заголовок обязателен
         if (title.isBlank() || content.isEmpty()) {
@@ -113,7 +113,7 @@ class CreatePostFragment : Fragment() {
             // Подготовка данных
             // Если поле картинки пустое -> записываем null
             val finalImageUrl = imageUrl.ifBlank { null }
-            val selectedTopicIds = binding.chipGroupTopics.checkedChipIds // Получаем список ID
+            val selectedTopicIds: List<Long> = binding.chipGroupTopics.checkedChipIds.map { it.toLong() } // Получаем список ID
             // ОТПРАВЛЯЕМ ДАННЫЕ ВО VIEWMODEL
             viewModel.createPost(title, content, finalImageUrl, username, selectedTopicIds)
         } else {
