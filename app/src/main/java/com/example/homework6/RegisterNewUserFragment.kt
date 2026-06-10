@@ -3,6 +3,7 @@ package com.example.homework6
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.core.content.edit
@@ -79,9 +80,8 @@ class RegisterNewUserFragment : Fragment(R.layout.fragment_new_user_register) {
             }
 
             // Собираем список ID тем (UI -> Data)
-            val dbTopicIdsList = mutableListOf<Int>()
-            for (chipId in selectedChipIds) {
-                val topicId = when (chipId) {
+            val dbTopicIdsList: List<Int> = selectedChipIds.mapNotNull { chipId ->
+                when (chipId) {
                     R.id.chipNature -> 1
                     R.id.chipArt -> 2
                     R.id.chipCosmetics -> 3
@@ -89,10 +89,10 @@ class RegisterNewUserFragment : Fragment(R.layout.fragment_new_user_register) {
                     R.id.chipFood -> 5
                     else -> null
                 }
-                if (topicId != null) {
-                    dbTopicIdsList.add(topicId)
-                }
             }
+
+            Log.d("DEBUG_DB", "Выбранные Chip IDs: $selectedChipIds")
+            Log.d("DEBUG_DB", "Преобразованные в DB IDs: $dbTopicIdsList")
 
             viewModel.registerUser(
                 useremail = userEmail,

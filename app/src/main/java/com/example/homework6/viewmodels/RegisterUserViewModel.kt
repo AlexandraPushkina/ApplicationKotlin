@@ -1,5 +1,6 @@
 package com.example.homework6.viewmodels
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -9,6 +10,7 @@ import com.example.homework6.data.entities.UserEntity
 import com.example.homework6.data.entities.UserInterestsEntity
 import com.example.homework6.utils.InteractionWeights
 import com.example.homework6.utils.InteractionWeights.REGISTER_CHOICE
+import com.example.homework6.utils.InteractionWeights.NEUTRAL
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -40,6 +42,7 @@ class RegisterUserViewModel(private val db: AppDatabase) : ViewModel() {
 
                 // 2. Сохраняем в таблицу users
                 val insertedUserId = db.userDao().insertUser(newUser).toInt()
+                Log.d("DEBUG_DB", "Пользователь создан с ID: $insertedUserId")
 
                 // 3. Берем всевозможные темы
                 val allTopicIdsInDb = db.topicDao().getAllTopicsIds()
@@ -51,7 +54,7 @@ class RegisterUserViewModel(private val db: AppDatabase) : ViewModel() {
                     val initialWeight = if (topicIds.contains(currentTopicId)) {
                         REGISTER_CHOICE
                     } else {
-                        InteractionWeights.NEUTRAL
+                        NEUTRAL
                     }
 
                     UserInterestsEntity(
@@ -63,11 +66,15 @@ class RegisterUserViewModel(private val db: AppDatabase) : ViewModel() {
 
                 if (initialInterests.isNotEmpty()) {
                     db.UserInterestsDao().insertInterests(initialInterests)
+                    Log.d("DEBUG_DB", "Интересы для пользователя $insertedUserId успешно инициализированы. Кол-во: ${initialInterests.size}")
+                } else {
+                    Log.e("DEBUG_DB", "Список всех тем пуст! Проверь, заполнена ли таблица topics.")
                 }
 
                 _registrationSuccess.postValue(insertedUserId) // ожидаем id пользователя
 
             } catch (e: Exception) {
+                Log.e("DEBUG_DB", "Ошибка при регистрации: ${e.message}")
                 _error.postValue("Ошибка регистрации: ${e.message}")
             }
         }
