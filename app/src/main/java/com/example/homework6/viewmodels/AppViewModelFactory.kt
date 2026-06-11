@@ -23,7 +23,7 @@ class AppViewModelFactory(private val application: Application) : ViewModelProvi
             ) as T
         }
         if (modelClass.isAssignableFrom(CreatePostViewModel::class.java)) {
-            return CreatePostViewModel(repository) as T
+            return CreatePostViewModel(application,repository) as T
         }
         if (modelClass.isAssignableFrom(ProfileViewModel::class.java)) {
             return ProfileViewModel(db) as T

@@ -3,6 +3,7 @@ package com.example.homework6.viewmodels
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.homework6.data.entities.PostEntity
 import kotlinx.coroutines.Dispatchers
@@ -10,6 +11,7 @@ import kotlinx.coroutines.launch
 import com.example.homework6.FeedRankingUseCase
 import com.example.homework6.PostRepository
 import com.example.homework6.data.UserDao
+import com.example.homework6.data.entities.TopicEntity
 import com.example.homework6.data.entities.UserEntity
 
 class FeedViewModel(
@@ -41,4 +43,34 @@ class FeedViewModel(
             _feedPosts.postValue(result)
         }
     }
+
+    fun getTopicsForPost(postId: Int): LiveData<List<TopicEntity>> {
+        return repository.getTopicsForPost(postId)
+    }
+
+    fun incrementInterestWeights(topics: List<TopicEntity>) {
+        viewModelScope.launch {
+            // Проходим по всем тегам поста и увеличиваем их вес в БД
+            topics.forEach { topic ->
+                repository.incrementInterestWeight(userId, topic.id)
+            }
+        }
+    }
+
+
 }
+
+class FeedViewModelFactory(
+    private val userDao: UserDao,
+    private val rankingUseCase: FeedRankingUseCase,
+    private val repository: PostRepository
+) : ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(FeedViewModel::class.java)) {
+            @Suppress("UNCHECKED_CAST")
+            return FeedViewModel(userDao, rankingUseCase, repository) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel class")
+    }
+}
+

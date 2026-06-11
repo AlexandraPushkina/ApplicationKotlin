@@ -21,7 +21,7 @@ import com.example.homework6.data.entities.PostTopicCrossRef
                     UserInterestsEntity::class,
                     PostTopicEntity::class,
                     PostTopicCrossRef::class],
-    version = 6, exportSchema = false)
+    version = 7, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
 
     // 2. Объявляем абстрактный метод для получения DAO

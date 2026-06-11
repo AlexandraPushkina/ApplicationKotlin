@@ -30,12 +30,12 @@ class MainActivity : AppCompatActivity() {
         Log.d("DEBUG_DB", "User ID is: $userId")
         if (userId != -1) {
         // 1. Настройка навигации
-        val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
-        val navController = navHostFragment.navController
-        binding.bottomNavView.setupWithNavController(navController)
+            val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+            val navController = navHostFragment.navController
+            binding.bottomNavView.setupWithNavController(navController)
 
-        // 2. Инициализация базы данных (проверка и заливка тестовых данных)
-        viewModel.initDatabase()
+            // 2. Инициализация базы данных (проверка и заливка тестовых данных)
+            viewModel.initDatabase()
         }
         // Ошибка: ID не найден. переход в экран регистрации
         else {

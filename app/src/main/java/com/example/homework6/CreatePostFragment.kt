@@ -2,16 +2,19 @@ package com.example.homework6
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.view.ContextThemeWrapper
+import androidx.core.view.children
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.example.homework6.data.entities.TopicEntity
 import com.example.homework6.databinding.FragmentCreatePostBinding
+import com.example.homework6.extensions.showErrorMessage
 import com.example.homework6.viewmodels.AppViewModelFactory
 import com.example.homework6.viewmodels.CreatePostViewModel
 import com.google.android.material.chip.Chip
@@ -40,6 +43,7 @@ class CreatePostFragment : Fragment() {
 
         // 2. Наблюдаем за списком тем и создаем чипы
         viewModel.allTopics.observe(viewLifecycleOwner) { topics ->
+            Log.d("DEBUG_UI", "Загружено тем: ${topics.size}")
             setupTopicChips(topics)
         }
 
@@ -61,38 +65,42 @@ class CreatePostFragment : Fragment() {
     }
 
     private fun setupTopicChips(topics: List<TopicEntity>) {
-        binding.chipGroupTopics.removeAllViews()
+        val chipGroup = binding.chipGroupTopics
+        chipGroup.removeAllViews()
 
-        val inflater = LayoutInflater.from(requireContext())
+        Log.d("DEBUG_UI", "setupTopicChips: topics.size=${topics.size}")
+
+        if (topics.isEmpty()) {
+            Log.d("DEBUG_UI", "Темы не найдены для отображения")
+            return
+        }
 
         topics.forEach { topic ->
-            // Используем стандартный стиль фильтра (с галочкой при выборе)
-            val chip = inflater.inflate(R.layout.item_topic_chip,
-                                        binding.chipGroupTopics,
-                                        false) as Chip
-
-            chip.apply {
+            val chip = Chip(requireContext()).apply {
                 text = topic.name
-                id = topic.id // ID из базы данных для checkedChipIds
-
-                // Слушатель для ограничения в 10 тем
-                setOnCheckedChangeListener { _, isChecked ->
-                    val selectedCount = binding.chipGroupTopics.checkedChipIds.size
-                    if (isChecked && selectedCount > 10) {
-                        this.isChecked = false // Отменяем выбор
-                        Toast.makeText(context, "Максимум 10 тем", Toast.LENGTH_SHORT).show()
-                    }
-                }
+                isCheckable = true
+                id = View.generateViewId() // уникальный ID чипа
+                tag = topic.id             // сохраняем id темы для последующего получения
             }
-            binding.chipGroupTopics.addView(chip)
+            chipGroup.addView(chip)
         }
+        Log.d("DEBUG_UI", "setupTopicChips: чипы добавлены: ${chipGroup.childCount}")
+    }
+
+    private fun getSelectedTopicIds(): List<Int> {
+        return binding.chipGroupTopics.children
+            .filterIsInstance<Chip>()
+            .filter { it.isChecked }
+            .mapNotNull { it.tag as? Int }
+            .toList()
     }
 
     private fun validateAndSave() {
         val title = binding.etTitle.text.toString().trim()
         val content = binding.etContent.text.toString().trim()
         val imageUrl = binding.etImageUrl.text.toString().trim()
-        val selectedTopicIds: List<Long> = binding.chipGroupTopics.checkedChipIds.map { it.toLong() }
+        val username = viewModel.getUsername()
+        val selectedTopicIds = getSelectedTopicIds()
 
         // Валидация: Заголовок обязателен
         if (title.isBlank() || content.isEmpty()) {
@@ -105,16 +113,12 @@ class CreatePostFragment : Fragment() {
             Toast.makeText(context, "Выберите хотя бы одну тему", Toast.LENGTH_SHORT).show()
             return
         }
-        val sharedPref = requireActivity().getSharedPreferences("AppPrefs", Context.MODE_PRIVATE)
-        val username = sharedPref.getString("current_user_name", null)
 
         if (username != null) {
-
             // Подготовка данных
             // Если поле картинки пустое -> записываем null
             val finalImageUrl = imageUrl.ifBlank { null }
             val selectedTopicIds: List<Long> = binding.chipGroupTopics.checkedChipIds.map { it.toLong() } // Получаем список ID
-            // ОТПРАВЛЯЕМ ДАННЫЕ ВО VIEWMODEL
             viewModel.createPost(title, content, finalImageUrl, username, selectedTopicIds)
         } else {
             Toast.makeText(context, "Ошибка: вы не авторизованы", Toast.LENGTH_SHORT).show()

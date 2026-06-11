@@ -47,8 +47,8 @@ interface UserDao {
     @Query("SELECT EXISTS(SELECT 1 FROM users WHERE useremail = :email)")
     suspend fun isEmailTaken(email: String): Boolean
 
-
-
+    @Query("UPDATE user_interests SET weight = weight + 1 WHERE user_id = :userId AND topic_id = :topicId")
+    suspend fun incrementWeight(userId: Int, topicId: Int)
 
 
     // Поиск пользователя по паре "Почта + Пароль"

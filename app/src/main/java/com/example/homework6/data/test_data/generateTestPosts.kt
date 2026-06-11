@@ -20,7 +20,6 @@ fun generateTestPosts(): List<TestPostData> {
             topicIds = listOf(1, 4)
         ),
 
-        // Пост 2: Косметика (2) + Искусство (3)
         TestPostData(
             post = PostEntity(
                 id = 2,
@@ -46,7 +45,6 @@ fun generateTestPosts(): List<TestPostData> {
             topicIds = listOf(5)
         ),
 
-        // Пост 4: Спорт (4) + Косметика (2)
         TestPostData(
             post = PostEntity(
                 id = 4,
@@ -56,10 +54,9 @@ fun generateTestPosts(): List<TestPostData> {
                 content = "Спорт — это здоровье, но пот и макияж — враги для пор. Рассказываю о своем уходе до и после зала. Спойлер: мицеллярная вода всегда должна быть в спортивной сумке!",
                 imageUrl = "https://i.pinimg.com/736x/ee/4b/99/ee4b99cd5165d88f996105108154542f.jpg"
             ),
-            topicIds = listOf(2, 4)
+            topicIds = listOf(3, 4)
         ),
 
-        // Пост 5: Природа (1) + Еда (5)
         TestPostData(
             post = PostEntity(
                 id = 5,
@@ -72,7 +69,6 @@ fun generateTestPosts(): List<TestPostData> {
             topicIds = listOf(1, 5)
         ),
 
-        // Пост 6: Искусство (3)
         TestPostData(
             post = PostEntity(
                 id = 6,
@@ -82,10 +78,9 @@ fun generateTestPosts(): List<TestPostData> {
                 content = "Давно хотела попробовать сделать чашку своими руками. Ощущение глины в руках невероятно успокаивает. Получилось не идеально ровно, зато с душой. Всем советую для разгрузки головы.",
                 imageUrl = "https://i.pinimg.com/1200x/a6/8a/4d/a68a4d7bd187de27d19f0e1cf4144e73.jpg"
             ),
-            topicIds = listOf(3)
+            topicIds = listOf(2)
         ),
 
-        // Пост 7: Спорт (4) + Еда (5)
         TestPostData(
             post = PostEntity(
                 id = 7,
@@ -98,7 +93,6 @@ fun generateTestPosts(): List<TestPostData> {
             topicIds = listOf(4, 5)
         ),
 
-        // Пост 8: Косметика (2)
         TestPostData(
             post = PostEntity(
                 id = 8,
@@ -108,10 +102,9 @@ fun generateTestPosts(): List<TestPostData> {
                 content = "Не обязательно тратить миллионы на люкс. Нашла в обычном магазине тушь, которая делает ресницы кукольными и держится весь день. Честный обзор без рекламы.",
                 imageUrl = "https://i.pinimg.com/736x/5c/e7/5b/5ce75b1702ea52b73ce0cf08d8e3d5c4.jpg"
             ),
-            topicIds = listOf(2)
+            topicIds = listOf(3)
         ),
 
-        // Пост 9: Природа (1) + Искусство (3)
         TestPostData(
             post = PostEntity(
                 id = 9,
@@ -121,10 +114,9 @@ fun generateTestPosts(): List<TestPostData> {
                 content = "Золотая листва — лучший фон. Подобрала для вас 5 идей для позирования в парке, чтобы фотографии получились живыми и атмосферными. Не забудьте взять с собой книгу или стаканчик кофе.",
                 imageUrl = "https://i.pinimg.com/1200x/8c/e4/d3/8ce4d309c89a7ccb43661697f8584388.jpg"
             ),
-            topicIds = listOf(1, 3)
+            topicIds = listOf(1, 2)
         ),
 
-        // Пост 10: Спорт (4)
         TestPostData(
             post = PostEntity(
                 id = 10,
@@ -137,7 +129,6 @@ fun generateTestPosts(): List<TestPostData> {
             topicIds = listOf(4)
         ),
 
-        // Пост 11: Косметика (2)
         TestPostData(
             post = PostEntity(
                 id = 11,
@@ -147,10 +138,9 @@ fun generateTestPosts(): List<TestPostData> {
                 content = "Пользуюсь уже две недели. Кожа стала заметно ярче, но есть нюансы с нанесением. Рассказываю подробно...",
                 imageUrl = "https://i.pinimg.com/1200x/94/3e/6c/943e6cb6d21c66c87e0258f887b37c70.jpg"
             ),
-            topicIds = listOf(2)
+            topicIds = listOf(3)
         ),
 
-        // Пост 12: Искусство (3)
         TestPostData(
             post = PostEntity(
                 id = 12,
@@ -160,10 +150,9 @@ fun generateTestPosts(): List<TestPostData> {
                 content = "Сложно, непонятно, но безумно интересно. Каждый видит что-то свое. Особенно запомнилась картина 'Красный квадрат'.",
                 imageUrl = "https://i.pinimg.com/1200x/ea/56/75/ea56758ec428131942e7c44c828ae10f.jpg"
             ),
-            topicIds = listOf(3)
+            topicIds = listOf(2)
         ),
 
-        // Пост 13: Природа (1)
         TestPostData(
             post = PostEntity(
                 id = 13,

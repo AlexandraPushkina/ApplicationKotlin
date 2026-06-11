@@ -15,8 +15,8 @@ data class PostWithTopics(
         entityColumn = "id",        // ID из TopicEntity
         associateBy = Junction(     // Через таблицу-перемычку
             value = PostTopicCrossRef::class,
-            parentColumn = "postId",
-            entityColumn = "topicId"
+            parentColumn = "post_id",
+            entityColumn = "topic_id"
         )
     )
     val topics: List<TopicEntity>   // Список всех тем этого поста

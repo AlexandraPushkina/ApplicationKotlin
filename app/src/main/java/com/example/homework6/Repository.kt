@@ -1,5 +1,6 @@
 package com.example.homework6
 
+import androidx.lifecycle.LiveData
 import com.example.homework6.data.AppDatabase
 import com.example.homework6.data.PostDao
 import com.example.homework6.data.UserDao
@@ -41,6 +42,14 @@ class PostRepository(private val db: AppDatabase) {
 
     suspend fun getUserWeights(userId: Int): Map<Int, Int> {
         return db.UserInterestsDao().getUserInterests(userId).associate { it.topicId to it.weight }
+    }
+
+    suspend fun incrementInterestWeight(userId: Int, topicId: Int) {
+        db.userDao().incrementWeight(userId, topicId)
+    }
+
+    fun getTopicsForPost(postId: Int): LiveData<List<TopicEntity>> {
+        return db.postDao().getTopicsForPost(postId)
     }
 }
 

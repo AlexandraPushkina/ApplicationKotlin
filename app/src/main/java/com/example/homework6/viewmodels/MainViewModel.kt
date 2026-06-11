@@ -33,9 +33,10 @@ class MainViewModel(private val db: AppDatabase) : ViewModel() {
 
             val count = db.postDao().getCount()
             Log.d("DEBUG_DB", "Текущее количество постов: $count")
-
+            //db.postDao().deleteAll()
             // Если постов нет (равно 0), то загружаем тестовые посты
-            if (count == 13) {
+            if (count == 0) {
+            //if (true) {
                 Log.d("DEBUG_DB", "База пуста, генерируем посты...")
                 val testPosts = generateTestPosts() // List<TestPostData>
 

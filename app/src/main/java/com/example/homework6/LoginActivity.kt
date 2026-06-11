@@ -1,5 +1,6 @@
 package com.example.homework6
 
+import android.content.Context
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
@@ -66,7 +67,14 @@ class LoginActivity : AppCompatActivity() {
             // Пароль не совпал
             showErrorMessage("Неверный пароль для входа")
         } else {
-            // Успешный вход
+            val sharedPref = getSharedPreferences("AppPrefs", Context.MODE_PRIVATE)
+            with(sharedPref.edit()) {
+                // Сохраняем почту для запросов в БД
+                putString("current_user_email", user.useremail)
+                // Сохраняем имя только для отображения в UI (если нужно)
+                putString("current_user_name", user.username ?: user.useremail)
+                apply()
+            }
             navigateToMain(user.id)
         }
     }

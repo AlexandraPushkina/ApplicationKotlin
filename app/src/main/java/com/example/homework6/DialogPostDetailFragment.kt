@@ -5,15 +5,29 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.viewModels
 import com.bumptech.glide.Glide
+import com.example.homework6.data.AppDatabase
 import com.example.homework6.data.entities.PostEntity
 import com.example.homework6.databinding.DialogPostDetailBinding
+import com.example.homework6.viewmodels.FeedViewModel
+import com.example.homework6.viewmodels.FeedViewModelFactory
+import com.google.android.material.chip.Chip
 
 class DialogPostDetailFragment : DialogFragment() {
 
     // Настройка ViewBinding
     private var _binding: DialogPostDetailBinding? = null
     private val binding get() = _binding!!
+    private val viewModel: FeedViewModel by viewModels {
+        val db = AppDatabase.getDatabase(requireContext())
+        val repository = PostRepository(db)
+        val rankingUseCase = FeedRankingUseCase(repository)
+
+        FeedViewModelFactory(db.userDao(), rankingUseCase, repository)
+    }
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,6 +62,17 @@ class DialogPostDetailFragment : DialogFragment() {
                 Glide.with(this)
                     .load(item.imageUrl)
                     .into(binding.imgPostDetail)
+            }
+            viewModel.getTopicsForPost(item.id).observe(viewLifecycleOwner) { tags ->
+                binding.chipGroupTags.removeAllViews()
+                tags.forEach { tag ->
+                    val chip = Chip(requireContext()).apply {
+                        text = tag.name
+                        isClickable = false
+                        isCheckable = false
+                    }
+                    binding.chipGroupTags.addView(chip)
+                }
             }
         }
 

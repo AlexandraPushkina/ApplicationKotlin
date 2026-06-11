@@ -1,5 +1,6 @@
 package com.example.homework6.data
 
+import androidx.lifecycle.LiveData
 import com.example.homework6.data.entities.PostEntity
 import androidx.room.Dao
 import androidx.room.Insert
@@ -8,6 +9,7 @@ import androidx.room.Query
 import androidx.room.Transaction
 import com.example.homework6.data.entities.PostTopicCrossRef
 import com.example.homework6.data.entities.PostWithTopics
+import com.example.homework6.data.entities.TopicEntity
 
 @Dao
 interface PostDao {
@@ -15,6 +17,14 @@ interface PostDao {
     @Transaction
     @Query("SELECT * FROM posts WHERE id = :postId")
     suspend fun getPost(postId: Long): PostWithTopics?
+
+    @Query("""
+    SELECT * FROM topics 
+    INNER JOIN post_topic_cross_ref ON topics.id = post_topic_cross_ref.topic_id 
+    WHERE post_topic_cross_ref.post_id = :postId
+""")
+    fun getTopicsForPost(postId: Int): LiveData<List<TopicEntity>>
+
 
     // Получить все посты из таблицы 'posts'
     @Query("SELECT * FROM posts")
