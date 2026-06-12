@@ -34,6 +34,13 @@ class FeedViewModel(
         }
     }
 
+    fun getUserByEmail(userEmail: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val user = userDao.getUserByEmail(userEmail)
+            _currentUser.postValue(user)
+        }
+    }
+
     // Загрузка постов, учитывая веса (интересы) пользователя
     fun loadPosts(userId: Int) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -47,11 +54,13 @@ class FeedViewModel(
         return repository.getTopicsForPost(postId)
     }
 
-    fun incrementInterestWeights(topics: List<TopicEntity>) {
+    fun incrementInterestWeights(userEmail: String, topics: List<TopicEntity>) {
         viewModelScope.launch {
             // Проходим по всем тегам поста и увеличиваем их вес в БД
             topics.forEach { topic ->
-                repository.incrementInterestWeight(userId, topic.id)
+                val userId = repository.getUserByEmail(userEmail)
+                if (userId != null)
+                    repository.incrementInterestWeight(userId.id, topic.id)
             }
         }
     }

@@ -1,6 +1,8 @@
 package com.example.homework6
 
+import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -47,6 +49,8 @@ class DialogPostDetailFragment : DialogFragment() {
 
         // Получение поста из аргументов
         val post = arguments?.getParcelable<PostEntity>("POST_DATA")
+        val sharedPref = requireContext().getSharedPreferences("AppPrefs", Context.MODE_PRIVATE)
+        val currentUserEmail = sharedPref.getString("current_user_email", null)
 
         post?.let { item ->
             binding.tvAuthorName.text = item.authorName
@@ -69,7 +73,11 @@ class DialogPostDetailFragment : DialogFragment() {
                     }
                     binding.chipGroupTags.addView(chip)
                 }
+                if (currentUserEmail != null) {
+                    viewModel.incrementInterestWeights(currentUserEmail, tags)
+                }
             }
+
         }
 
         // Настраивание кнопки закрытия
