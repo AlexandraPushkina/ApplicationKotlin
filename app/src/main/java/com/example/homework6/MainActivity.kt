@@ -16,7 +16,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
 
-    // Подключаем ViewModel
+    // Подключение ViewModel
     private val viewModel: MainViewModel by viewModels {
         AppViewModelFactory(application)
     }

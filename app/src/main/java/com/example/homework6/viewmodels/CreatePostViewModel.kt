@@ -6,10 +6,8 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.homework6.PostRepository
-import com.example.homework6.data.AppDatabase
 import com.example.homework6.data.entities.PostEntity
 import com.example.homework6.data.entities.TopicEntity
 import kotlinx.coroutines.Dispatchers
@@ -17,18 +15,14 @@ import kotlinx.coroutines.launch
 
 class CreatePostViewModel(application: Application, private val repository: PostRepository) :
     AndroidViewModel(application) {
-    // 1. "Событие" успеха.
-    // Используем Unit, потому что не важно значение, важен сам факт завершения.
     private val _postCreatedSuccess = MutableLiveData<Unit>()
     val postCreatedSuccess: LiveData<Unit> = _postCreatedSuccess
     private val _allTopics = MutableLiveData<List<TopicEntity>>()
     val allTopics: LiveData<List<TopicEntity>> = _allTopics
 
-    // 2. Событие ошибки (если вдруг база упадет)
     private val _error = MutableLiveData<String>()
     val error: LiveData<String> = _error
 
-    // 2. Твой метод создания поста (рефакторинг)
     fun createPost(title: String,
                    content: String,
                    imageUrl: String?,
@@ -81,7 +75,6 @@ class CreatePostViewModel(application: Application, private val repository: Post
         val sharedPref = getApplication<Application>().getSharedPreferences("AppPrefs", Context.MODE_PRIVATE)
         return sharedPref.getString("current_user_email", null)
     }
-
 
     fun loadTopics() {
         viewModelScope.launch(Dispatchers.IO) {

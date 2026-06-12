@@ -15,19 +15,18 @@ import com.example.homework6.data.entities.TopicEntity
 import com.example.homework6.data.entities.UserEntity
 
 class FeedViewModel(
-    private val userDao: UserDao, // Добавляем DAO для работы с юзером
+    private val userDao: UserDao,
     private val feedRankingUseCase: FeedRankingUseCase,
     private val repository: PostRepository
 ) : ViewModel() {
 
-    // Стримы данных для фрагмента
     private val _currentUser = MutableLiveData<UserEntity?>()
     val currentUser: LiveData<UserEntity?> = _currentUser
 
     private val _feedPosts = MutableLiveData<List<PostEntity>>()
     val feedPosts: LiveData<List<PostEntity>> = _feedPosts
 
-    // 1. Получаем пользователя по ID
+    // Получение пользователя по ID
     fun getUser(userId: Int) {
         viewModelScope.launch(Dispatchers.IO) {
             val user = userDao.getUserById(userId)
@@ -35,7 +34,7 @@ class FeedViewModel(
         }
     }
 
-    // 2. Загружаем посты, учитывая веса (интересы) пользователя
+    // Загрузка постов, учитывая веса (интересы) пользователя
     fun loadPosts(userId: Int) {
         viewModelScope.launch(Dispatchers.IO) {
             val weights = repository.getUserWeights(userId)

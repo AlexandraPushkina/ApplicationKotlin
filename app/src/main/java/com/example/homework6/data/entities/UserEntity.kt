@@ -1,7 +1,5 @@
 package com.example.homework6.data.entities
 
-import android.provider.ContactsContract
-import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey

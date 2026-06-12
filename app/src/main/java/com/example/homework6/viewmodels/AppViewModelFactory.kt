@@ -14,7 +14,7 @@ class AppViewModelFactory(private val application: Application) : ViewModelProvi
         val repository = PostRepository(db)
         val rankingUseCase = FeedRankingUseCase(repository)
 
-        // Перечисляем все ViewModel
+        // Перечисление всех ViewModel
         if (modelClass.isAssignableFrom(FeedViewModel::class.java)) {
             return FeedViewModel(
                 userDao = db.userDao(),

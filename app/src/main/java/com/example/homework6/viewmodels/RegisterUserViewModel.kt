@@ -8,7 +8,6 @@ import androidx.lifecycle.viewModelScope
 import com.example.homework6.data.AppDatabase
 import com.example.homework6.data.entities.UserEntity
 import com.example.homework6.data.entities.UserInterestsEntity
-import com.example.homework6.utils.InteractionWeights
 import com.example.homework6.utils.InteractionWeights.REGISTER_CHOICE
 import com.example.homework6.utils.InteractionWeights.NEUTRAL
 import kotlinx.coroutines.Dispatchers
@@ -31,7 +30,6 @@ class RegisterUserViewModel(private val db: AppDatabase) : ViewModel() {
                      topicIds: List<Int>) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                // 1. Создаем юзера
                 val newUser = UserEntity(
                     id = 0,
                     useremail = useremail,
@@ -40,17 +38,13 @@ class RegisterUserViewModel(private val db: AppDatabase) : ViewModel() {
                     bio = bio
                 )
 
-                // 2. Сохраняем в таблицу users
                 val insertedUserId = db.userDao().insertUser(newUser).toInt()
                 Log.d("DEBUG_DB", "Пользователь создан с ID: $insertedUserId")
 
-                // 3. Берем всевозможные темы
                 val allTopicIdsInDb = db.topicDao().getAllTopicsIds()
 
-                // 4. Формируем полный список интересов.
                 val initialInterests = allTopicIdsInDb.map { currentTopicId ->
 
-                    // Проверяем: есть ли текущая тема в списке тех, что выбрал юзер?
                     val initialWeight = if (topicIds.contains(currentTopicId)) {
                         REGISTER_CHOICE
                     } else {

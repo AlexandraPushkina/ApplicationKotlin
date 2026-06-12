@@ -27,11 +27,9 @@ class DialogPostDetailFragment : DialogFragment() {
         FeedViewModelFactory(db.userDao(), rankingUseCase, repository)
     }
 
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // Делаем диалог полноэкранным
+        // Настройка диалога полноэкранным
         setStyle(STYLE_NORMAL, R.style.Theme_Homework6)
     }
 
@@ -39,7 +37,7 @@ class DialogPostDetailFragment : DialogFragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        // Связываем класс с XML файлом dialog_post_detail
+        // Связывание класса с XML файлом dialog_post_detail
         _binding = DialogPostDetailBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -47,12 +45,10 @@ class DialogPostDetailFragment : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // 1. Получаем пост из аргументов
-        // getParcelable может вернуть null, поэтому используем ?.let
+        // Получение поста из аргументов
         val post = arguments?.getParcelable<PostEntity>("POST_DATA")
 
         post?.let { item ->
-            // Заполняем данные
             binding.tvAuthorName.text = item.authorName
             binding.tvPostTitle.text = item.title
             binding.tvPostContent.text = item.content // Здесь полный текст
@@ -76,7 +72,7 @@ class DialogPostDetailFragment : DialogFragment() {
             }
         }
 
-        // 2. Настраиваем кнопку закрытия
+        // Настраивание кнопки закрытия
         binding.toolbar.setNavigationOnClickListener {
             dismiss() // Закрывает диалог
         }
@@ -92,7 +88,6 @@ class DialogPostDetailFragment : DialogFragment() {
         fun newInstance(post: PostEntity): DialogPostDetailFragment {
             val fragment = DialogPostDetailFragment()
             val args = Bundle()
-            // Кладем пост в "конверт" (Bundle) под ключом "POST_DATA"
             args.putParcelable("POST_DATA", post)
             fragment.arguments = args
             return fragment

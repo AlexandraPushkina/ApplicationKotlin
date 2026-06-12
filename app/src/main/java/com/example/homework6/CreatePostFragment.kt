@@ -1,20 +1,17 @@
 package com.example.homework6
 
-import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.appcompat.view.ContextThemeWrapper
 import androidx.core.view.children
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.example.homework6.data.entities.TopicEntity
 import com.example.homework6.databinding.FragmentCreatePostBinding
-import com.example.homework6.extensions.showErrorMessage
 import com.example.homework6.viewmodels.AppViewModelFactory
 import com.example.homework6.viewmodels.CreatePostViewModel
 import com.google.android.material.chip.Chip
@@ -38,23 +35,21 @@ class CreatePostFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Загружаем существующие темы постов
+        // Загрузка существующих тем постов
         viewModel.loadTopics()
 
-        // 2. Наблюдаем за списком тем и создаем чипы
+        // Наблюдение за списком тем и создание чипов
         viewModel.allTopics.observe(viewLifecycleOwner) { topics ->
             Log.d("DEBUG_UI", "Загружено тем: ${topics.size}")
             setupTopicChips(topics)
         }
 
-        // 3. Обработка успеха
-        // Как только ViewModel скажет "Готово", покажем тост и закроем экран
         viewModel.postCreatedSuccess.observe(viewLifecycleOwner) {
             Toast.makeText(context, "Пост создан!", Toast.LENGTH_SHORT).show()
             findNavController().popBackStack()
         }
 
-        // 4. Обработка ошибок
+        // Обработка ошибок
         viewModel.error.observe(viewLifecycleOwner) { errorMessage ->
             Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show()
         }
@@ -80,7 +75,7 @@ class CreatePostFragment : Fragment() {
                 text = topic.name
                 isCheckable = true
                 id = View.generateViewId() // уникальный ID чипа
-                tag = topic.id             // сохраняем id темы для последующего получения
+                tag = topic.id             // сохранение id темы для последующего получения
             }
             chipGroup.addView(chip)
         }
@@ -102,12 +97,11 @@ class CreatePostFragment : Fragment() {
         val username = viewModel.getUsername()
         val selectedTopicIds = getSelectedTopicIds()
 
-        // Валидация: Заголовок обязателен
         if (title.isBlank() || content.isEmpty()) {
             Toast.makeText(context, "Заполните все поля", Toast.LENGTH_SHORT).show()
             return
         } else {
-            binding.tilTitle.error = null // Убираем ошибку если все ок
+            binding.tilTitle.error = null
         }
         if (selectedTopicIds.isEmpty()) {
             Toast.makeText(context, "Выберите хотя бы одну тему", Toast.LENGTH_SHORT).show()
@@ -118,10 +112,12 @@ class CreatePostFragment : Fragment() {
             // Подготовка данных
             // Если поле картинки пустое -> записываем null
             val finalImageUrl = imageUrl.ifBlank { null }
-            val selectedTopicIds: List<Long> = binding.chipGroupTopics.checkedChipIds.map { it.toLong() } // Получаем список ID
+            val selectedTopicIds: List<Long> =
+                binding.chipGroupTopics.checkedChipIds.map { it.toLong() } // Получение списка ID
             viewModel.createPost(title, content, finalImageUrl, username, selectedTopicIds)
         } else {
-            Toast.makeText(context, "Ошибка: вы не авторизованы", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Ошибка: вы не авторизованы",
+                                    Toast.LENGTH_SHORT).show()
         }
     }
 

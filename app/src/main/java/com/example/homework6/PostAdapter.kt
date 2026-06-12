@@ -1,17 +1,15 @@
 package com.example.homework6
 
-import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-
 import com.example.homework6.data.entities.PostEntity
-import com.example.homework6.databinding.ItemPostBinding // Проверь пакет!
+import com.example.homework6.databinding.ItemPostBinding
 
 class PostsAdapter(
 
-    // Функция, которая принимает пост (PostEntity) и ничего не возвращает (Unit)"
+
     private val posts: List<PostEntity>,
     private val onPostClick: (PostEntity) -> Unit
 ) : RecyclerView.Adapter<PostsAdapter.PostViewHolder>() {
@@ -44,7 +42,6 @@ class PostsAdapter(
 
             // Обработка клика
             root.setOnClickListener {
-                // Вызываем лямбду, передавая туда текущий пост
                 onPostClick(post)
             }
         }
@@ -64,7 +61,7 @@ class PostsAdapter(
             }
         }
 
-        // Сообщаем адаптеру, что элемент визуально переместился
+        // Сообщение адаптеру, что элемент визуально переместился
         notifyItemMoved(fromPosition, toPosition)
-    }  // конец перемещение
+    }
 }

@@ -1,6 +1,5 @@
 package com.example.homework6
 
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -10,14 +9,8 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
-import com.example.homework6.data.AppDatabase
 import com.example.homework6.databinding.FragmentFeedBinding
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import androidx.navigation.fragment.findNavController
 import com.example.homework6.extensions.EXTRA_USER_ID
 import com.example.homework6.viewmodels.AppViewModelFactory
 import com.example.homework6.viewmodels.FeedViewModel
@@ -43,16 +36,15 @@ class FeedFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         setupRecyclerView() // Настройка LayoutManager
 
-        // Пытаемся достать userId, который передавали в MainActivity
         val userId = requireActivity().intent.getIntExtra(EXTRA_USER_ID, -1)
         Log.d("MyFeedDebug", "1. Получен userId из Intent: $userId")
 
-        // Если юзера нет, то выходим на экрна регистрации
+        // Если юзера нет, то выходим на экран регистрации
         if (userId == -1) {
             kickUserOut("Ошибка сессии. Пожалуйста, войдите снова.")
             return
         }
-        // Создание адаптера для (пока что пустой) ленты постов. Ждем обновления данных
+        // Создание адаптера для (пока что пустой) ленты постов. Ожидание обновления данных
         val postsAdapter = PostsAdapter(mutableListOf()) { selectedPost ->
             val dialog = DialogPostDetailFragment.newInstance(selectedPost)
             dialog.show(parentFragmentManager, "PostDetail")
@@ -60,8 +52,6 @@ class FeedFragment : Fragment() {
 
         binding.recyclerViewFeed.adapter = postsAdapter
 
-
-        // 3. Подписываемся на список постов
         viewModel.feedPosts.observe(viewLifecycleOwner) { loadedPosts ->
             Log.d("MyFeedDebug", "4. Пришел список постов. Размер списка: ${loadedPosts.size}")
             // Когда посты загрузятся, создаем адаптер и показываем их
@@ -72,7 +62,6 @@ class FeedFragment : Fragment() {
                 }
         }
 
-        // 4. Подписываемся на данные пользователя из БД
         viewModel.currentUser.observe(viewLifecycleOwner) { user ->
             if (user == null) {
                 Log.d("MyFeedDebug", "3. ОШИБКА: База данных вернула null для юзера!")
@@ -88,15 +77,14 @@ class FeedFragment : Fragment() {
     }
 
     private fun kickUserOut(message: String) {
-        // Показываем Toast
         Toast.makeText(requireContext(),
             message,
             Toast.LENGTH_LONG).show()
 
-        // Создаем Intent для перехода на экран Входа/Регистрации (замените AuthActivity на вашу)
+        // Создание Intent для перехода на экран Входа/Регистрации
         val intent = Intent(requireContext(), AuthValidator::class.java)
 
-        // Очищаем историю (чтобы кнопка "Назад" не вернула обратно в Feed)
+        // Очищение истории (чтобы кнопка "Назад" не вернула обратно в Feed)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
     }
@@ -108,6 +96,6 @@ class FeedFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        _binding = null // Очищаем ссылку во избежание утечек памяти
+        _binding = null // Очищение ссылки во избежание утечек памяти
     }
 }

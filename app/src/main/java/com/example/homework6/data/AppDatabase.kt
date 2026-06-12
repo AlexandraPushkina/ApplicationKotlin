@@ -1,15 +1,12 @@
 package com.example.homework6.data
 
 import android.content.Context
-import android.util.Log
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.homework6.data.entities.PostEntity
 import com.example.homework6.data.entities.PostTopicEntity
 import com.example.homework6.data.entities.TopicEntity
-import com.example.homework6.data.entities.TopicWithPosts
 import com.example.homework6.data.entities.UserEntity
 import com.example.homework6.data.entities.UserInterestsEntity
 import com.example.homework6.data.entities.PostTopicCrossRef

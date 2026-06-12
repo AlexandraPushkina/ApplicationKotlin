@@ -1,26 +1,23 @@
 package com.example.homework6
 
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.fragment.app.Fragment
-import androidx.core.content.edit
 import androidx.fragment.app.viewModels
 import com.example.homework6.databinding.FragmentNewUserRegisterBinding
 import com.example.homework6.extensions.EXTRA_USER_ID
 import com.example.homework6.viewmodels.AppViewModelFactory
 import com.example.homework6.viewmodels.RegisterUserViewModel
 import com.example.homework6.extensions.showErrorMessage
-import com.example.homework6.extensions.showMessage
 
 class RegisterNewUserFragment : Fragment(R.layout.fragment_new_user_register) {
 
     private var _binding: FragmentNewUserRegisterBinding? = null
     private val binding get() = _binding!!
 
-    // Подключаем ViewModel
+    // Подключение ViewModel
     private val viewModel: RegisterUserViewModel by viewModels {
         AppViewModelFactory(requireActivity().application)
     }
@@ -28,10 +25,10 @@ class RegisterNewUserFragment : Fragment(R.layout.fragment_new_user_register) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Привязываем верстку
+        // Привязывание верстки
         _binding = FragmentNewUserRegisterBinding.bind(view)
 
-        // 1. ПРЕДЗАПОЛНЕНИЕ ПОЛЕЙ (Если мы передали email и пароль из другого экрана)
+        // 1. Предзаполнение полей
         val passedEmail = arguments?.getString("user_email")
         val passedPassword = arguments?.getString("user_password")
 
@@ -42,34 +39,30 @@ class RegisterNewUserFragment : Fragment(R.layout.fragment_new_user_register) {
             binding.tvUserPassword.setText(passedPassword)
         }
 
-        // 2. Ждем клика
+        // 2. Ожидание клика
         binding.btnRegister.setOnClickListener {
-            // Вызываем функцию проверки и сохранения
             attemptRegistration()
         }
     }
 
     private fun attemptRegistration() {
-        // 1. Считываем данные из полей ввода
+        // 1. Считывание данных из полей ввода
         val userEmail = binding.tvUserEmail.text.toString().trim()
         val password = binding.tvUserPassword.text.toString().trim()
         val userName = binding.tvUserName.text.toString().trim()
         val userBio = binding.etBio.text.toString().trim()
 
         // 2. Валидация
-        // Допустим, AuthValidator возвращает строку с ошибкой или null, если все отлично
         val emailError = AuthValidator.validateEmail(userEmail)
         val passwordError = AuthValidator.validatePassword(password)
-
-        // Добавим простую проверку для имени (не должно быть пустым)
         val nameError = if (userName.isBlank()) "Введите имя" else null
 
-        // 3. Отображаем ошибки (если они есть)
+        // 3. Отображение ошибки (если они есть)
         binding.tvUserEmail.error = emailError
         binding.tvUserPassword.error = passwordError
         binding.tvUserName.error = nameError
 
-        // 4. Если ошибок нет (все переменные == null), отправляем во ViewModel
+        // 4. Если ошибок нет, отправляем во ViewModel
         if (emailError == null && passwordError == null && nameError == null) {
 
             val selectedChipIds = binding.chipGroupTopics.checkedChipIds
@@ -79,7 +72,6 @@ class RegisterNewUserFragment : Fragment(R.layout.fragment_new_user_register) {
                 return
             }
 
-            // Собираем список ID тем (UI -> Data)
             val dbTopicIdsList: List<Int> = selectedChipIds.mapNotNull { chipId ->
                 when (chipId) {
                     R.id.chipNature -> 1
@@ -106,13 +98,13 @@ class RegisterNewUserFragment : Fragment(R.layout.fragment_new_user_register) {
             }
 
         } else {
-            showErrorMessage("Данные неккоректны")
+            showErrorMessage("Данные некорректны")
         }
     }
     private fun navigateToMainScreen(userId: Int) {
         val intent = Intent(requireContext(), MainActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        intent.putExtra(EXTRA_USER_ID, userId) //Передаем id в MainActivity
+        intent.putExtra(EXTRA_USER_ID, userId) // id в MainActivity
         startActivity(intent)
     }
 

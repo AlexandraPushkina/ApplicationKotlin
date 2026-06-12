@@ -17,7 +17,7 @@ class LoginActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        installSplashScreen() // Экран заставки (если настроен)
+        installSplashScreen() // Экран заставки
 
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -37,7 +37,7 @@ class LoginActivity : AppCompatActivity() {
 
     private suspend fun handleNextStep() {
 
-        // 1. Получаем данные
+        // 1. Получение данных
         val userEmail = binding.userEmailEditText.text.toString().trim()
         val password = binding.passwordEditText.text.toString()
 
@@ -45,11 +45,10 @@ class LoginActivity : AppCompatActivity() {
         val emailError = AuthValidator.validateEmail(userEmail)
         val passwordError = AuthValidator.validatePassword(password)
 
-        // Отображаем ошибки, если есть
+        // Отображение ошибки, если есть
         binding.userEmailEditText.error = emailError
         binding.passwordEditText.error = passwordError
 
-        // 3. Если ошибок нет — передаем данные дальше
         if (emailError == null && passwordError == null) {
             performLogin(userEmail, password)
         }
@@ -60,18 +59,14 @@ class LoginActivity : AppCompatActivity() {
         val user = db.userDao().getUserByEmail(email)
 
         if (user == null) {
-            // Почта не найдена
             showErrorMessage("Такой почты не существует!")
         }
         else if (db.userDao().checkUserByEmailAndPassword(email, pass) == null) {
-            // Пароль не совпал
             showErrorMessage("Неверный пароль для входа")
         } else {
             val sharedPref = getSharedPreferences("AppPrefs", Context.MODE_PRIVATE)
             with(sharedPref.edit()) {
-                // Сохраняем почту для запросов в БД
                 putString("current_user_email", user.useremail)
-                // Сохраняем имя только для отображения в UI (если нужно)
                 putString("current_user_name", user.username ?: user.useremail)
                 apply()
             }
@@ -82,13 +77,13 @@ class LoginActivity : AppCompatActivity() {
     private fun openIntroduceFragment(userEmail: String, password: String) {
         val fragment = RegisterNewUserFragment()
 
-        // Упаковываем данные в структуру (Bundle), чтобы фрагмент их получил
+        // Данные в структуру (Bundle), чтобы фрагмент их получил
         val bundle = Bundle()
         bundle.putString("user_name", userEmail)
         bundle.putString("user_password", password)
         fragment.arguments = bundle
 
-        // Открываем фрагмент
+        // Открытие фрагмента
         supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, fragment)
             .addToBackStack(null)

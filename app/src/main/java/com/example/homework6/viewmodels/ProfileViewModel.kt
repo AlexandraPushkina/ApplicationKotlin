@@ -12,11 +12,11 @@ import kotlinx.coroutines.launch
 
 class ProfileViewModel(private val db: AppDatabase) : ViewModel() {
 
-    // 1. Данные пользователя (Имя, Био)
+    // Данные пользователя (Имя, Био)
     private val _userProfile = MutableLiveData<UserEntity>()
     val userProfile: LiveData<UserEntity> = _userProfile
 
-    // 2. Список НАЗВАНИЙ интересов (например: ["Спорт", "Музыка"])
+    // Список интересов
     private val _topicNames = MutableLiveData<List<String>>()
     val topicNames: LiveData<List<String>> = _topicNames
 
@@ -24,20 +24,16 @@ class ProfileViewModel(private val db: AppDatabase) : ViewModel() {
     fun loadProfile(userId: Int) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                // 1. Грузим пользователя из базы
                 val user = fetchUser(userId)
-
-                // Если пользователя нет — прерываем работу корутины
                 if (user == null)
                     return@launch
 
-                // Отправляем пользователя в UI (Фрагмент получит имя и био)
+                // Отправление пользователя в UI
                 _userProfile.postValue(user)
 
-                // Загружаем его интересы
+                // Загрузка его интересов
                 fetchAndProcessInterests(userId)
             } catch (e: Exception) {
-                // Защита от краша при сбоях БД
                 _topicNames.postValue(emptyList())
             }
         }
@@ -48,42 +44,31 @@ class ProfileViewModel(private val db: AppDatabase) : ViewModel() {
         }
 
     private suspend fun fetchAndProcessInterests(userId: Int) {
-        // Достаем все интересы юзера
-        // (Обратите внимание: userInterestsDao обычно пишется с маленькой буквы)
         val allUserInterests = db.UserInterestsDao().getUserInterests(userId)
-
-        // Оставляем только те, где вес > 0, и берем только их ID
-        // (Функции filter и map делают код короче и избавляют от циклов for)
         val positiveTopicIds = allUserInterests
             .filter { it.weight > 0 }
             .map { it.topicId }
 
-        // Если положительных интересов нет, сразу отправляем пустой список и выходим
-        if (positiveTopicIds.isEmpty()) {
+       if (positiveTopicIds.isEmpty()) {
             _topicNames.postValue(emptyList())
             return
         }
 
-        // Грузим все темы
         val allTopics = db.topicDao().getAllTopicsList()
-
-        // Находим названия нужных тем
         val finalTopicNames = allTopics
             .filter { positiveTopicIds.contains(it.id) }
             .map { it.name }
 
-        // Отправляем готовый список названий во Фрагмент
         _topicNames.postValue(finalTopicNames)
     }
 }
 
-// Фабрика для ProfileViewModel (Обязательна, так как передаем AppDatabase)
-class ProfileViewModelFactory(private val db: AppDatabase) : ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(ProfileViewModel::class.java)) {
-            @Suppress("UNCHECKED_CAST")
-            return ProfileViewModel(db) as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel class")
-    }
-}
+//class ProfileViewModelFactory(private val db: AppDatabase) : ViewModelProvider.Factory {
+//    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+//        if (modelClass.isAssignableFrom(ProfileViewModel::class.java)) {
+//            @Suppress("UNCHECKED_CAST")
+//            return ProfileViewModel(db) as T
+//        }
+//        throw IllegalArgumentException("Unknown ViewModel class")
+//    }
+//}

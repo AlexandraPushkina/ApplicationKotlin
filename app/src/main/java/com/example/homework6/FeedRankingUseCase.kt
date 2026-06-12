@@ -6,25 +6,24 @@ import com.example.homework6.data.entities.PostEntity
 class FeedRankingUseCase(private val repository: PostRepository) {
 
     suspend operator fun invoke(interestWeightsMap: Map<Int, Int>): List<PostEntity> {
-        // 1. Получаем все посты со всеми их темами
+        // 1. Получение всех постов со всеми их темами
         val allPosts = repository.getAllPostsWithTopics()
 
-        // 2. Ранжируем
+        // 2. Ранжировка
         return allPosts
             .map { item ->
                 val post = item.post
                 val topics = item.topics
 
-                // Считаем СУММАРНЫЙ вес всех тегов поста
-                // Если тега нет в интересах пользователя, прибавляем 0
+                //  Суммарный вес всех тегов поста
                 val totalPostScore = topics.sumOf { topic ->
                     interestWeightsMap[topic.id] ?: 0
                 }
 
-                // Создаем пару: пост и его итоговый балл
+                // Создание пары: пост и его итоговый балл
                 post to totalPostScore
             }
-            // 3. Сортируем: сначала самые релевантные (где сумма баллов выше)
+            // 3. Сортировка, где сначала самые релевантные
             .sortedByDescending { it.second }
             // 4. Оставляем только объекты постов
             .map { it.first }
