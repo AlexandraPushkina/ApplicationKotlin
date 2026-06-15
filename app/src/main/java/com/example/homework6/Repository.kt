@@ -1,11 +1,16 @@
 package com.example.homework6
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.example.homework6.data.AppDatabase
+import com.example.homework6.data.entities.CommentEntity
+import com.example.homework6.data.entities.HiddenPostEntity
+import com.example.homework6.data.entities.LikeEntity
 import com.example.homework6.data.entities.PostEntity
 import com.example.homework6.data.entities.PostTopicCrossRef
 import com.example.homework6.data.entities.PostWithTopics
 import com.example.homework6.data.entities.TopicEntity
+import kotlinx.coroutines.runBlocking
 
 // Вызывает команды, предоставляющие данные с бд.
 class PostRepository(private val db: AppDatabase) {
@@ -40,6 +45,50 @@ class PostRepository(private val db: AppDatabase) {
 
     fun getTopicsForPost(postId: Int): LiveData<List<TopicEntity>> {
         return db.postDao().getTopicsForPost(postId)
+    }
+
+    fun isLiked(email: String, postId: Int): LiveData<Boolean> {
+        val user = runBlocking { getUserByEmail(email) } ?: return MutableLiveData(false)
+        return db.InteractionDao().isLiked(user.id, postId)
+    }
+//    suspend fun isLikedSuspended(email: String, postId: Int): Boolean {
+//        //Возвращает Int > 0
+//        val user = getUserByEmail(email) ?: return false
+//        val userId = user.id
+//        return db.InteractionDao().isLikedSync(userId, postId) > 0
+//    }
+    suspend fun toggleLike(email: String, postId: Int) {
+        val user = getUserByEmail(email) ?: return
+        val userId = user.id
+        val alreadyLiked = db.InteractionDao().isLikedSync(userId, postId)
+        if (alreadyLiked > 0) {
+            db.InteractionDao().deleteLike(userId, postId)
+        } else {
+            db.InteractionDao().insertLike(LikeEntity(userId = userId, postId = postId))
+        }
+    }
+
+    suspend fun hidePost(email: String, postId: Int) {
+        val user = getUserByEmail(email) ?: return
+        val userId = user.id
+        db.InteractionDao().hidePost(HiddenPostEntity(userId = userId, postId = postId))
+        val tags = db.postDao().getTopicsForPostSync(postId)
+        tags.forEach { tag ->
+            db.UserInterestsDao().updateInterestWeight(user.id, tag.id, -5)
+        }
+    }
+    fun getComments(postId: Int): LiveData<List<CommentEntity>> {
+        return db.InteractionDao().getCommentsForPost(postId)
+    }
+
+    suspend fun addComment(email: String, postId: Int, content: String) {
+        val userId = db.userDao().getUserByEmail(email)?.id ?: return
+        val comment = CommentEntity(
+            postId = postId,
+            userId = userId,
+            content = content
+        )
+        db.InteractionDao().insertComment(comment)
     }
 }
 

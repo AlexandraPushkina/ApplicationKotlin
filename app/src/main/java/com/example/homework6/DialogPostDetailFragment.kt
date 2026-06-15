@@ -1,6 +1,7 @@
 package com.example.homework6
 
 import android.content.Context
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -28,6 +29,7 @@ class DialogPostDetailFragment : DialogFragment() {
 
         FeedViewModelFactory(db.userDao(), rankingUseCase, repository)
     }
+    private var isPostHidden = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,39 +53,76 @@ class DialogPostDetailFragment : DialogFragment() {
         val post = arguments?.getParcelable<PostEntity>("POST_DATA")
         val sharedPref = requireContext().getSharedPreferences("AppPrefs", Context.MODE_PRIVATE)
         val currentUserEmail = sharedPref.getString("current_user_email", null)
+        if (currentUserEmail != null) {
+            // Слушатель для кнопки "Скрыть"
+            binding.btnHide.setOnClickListener {
+                isPostHidden = !isPostHidden
 
-        post?.let { item ->
-            binding.tvAuthorName.text = item.authorName
-            binding.tvPostTitle.text = item.title
-            binding.tvPostContent.text = item.content // Здесь полный текст
-
-            // Загрузка картинки
-            if (item.imageUrl != null) {
-                Glide.with(this)
-                    .load(item.imageUrl)
-                    .into(binding.imgPostDetail)
-            }
-            viewModel.getTopicsForPost(item.id).observe(viewLifecycleOwner) { tags ->
-                binding.chipGroupTags.removeAllViews()
-                tags.forEach { tag ->
-                    val chip = Chip(requireContext()).apply {
-                        text = tag.name
-                        isClickable = false
-                        isCheckable = false
-                    }
-                    binding.chipGroupTags.addView(chip)
+                if (isPostHidden) {
+                    binding.btnHide.setImageResource(R.drawable.ic_eye_closed)
+                    viewModel.hidePost(currentUserEmail, post?.id)
+                } else {
+                    binding.btnHide.setImageResource(R.drawable.ic_eye_open)
+                    // Метод для удаления из скрытых, если нужно
                 }
-                if (currentUserEmail != null) {
+            }
+
+            // Слушатель для Лайка
+            binding.btnLike.setOnClickListener {
+                viewModel.toggleLike(currentUserEmail, post?.id)
+            }
+
+            // Подписка на состояние лайка (чтобы менять иконку)
+            viewModel.isLiked(currentUserEmail, post?.id).observe(viewLifecycleOwner) { liked ->
+                if (liked) {
+                    binding.btnLike.setImageResource(R.drawable.ic_heart_filled)
+                    binding.btnLike.setColorFilter(Color.RED)
+                } else {
+                    binding.btnLike.setImageResource(R.drawable.ic_heart_outline)
+                    binding.btnLike.setColorFilter(Color.BLACK)
+                }
+            }
+
+            // Кнопка комментария
+            binding.btnComment.setOnClickListener {
+                post?.id?.let { postId ->
+                    val commentSheet = CommentBottomSheet(postId, currentUserEmail, viewModel)
+                    commentSheet.show(parentFragmentManager, "CommentDialog")
+                }
+            }
+
+            post?.let { item ->
+                binding.tvAuthorName.text = item.authorName
+                binding.tvPostTitle.text = item.title
+                binding.tvPostContent.text = item.content // Здесь полный текст
+
+                // Загрузка картинки
+                if (item.imageUrl != null) {
+                    Glide.with(this)
+                        .load(item.imageUrl)
+                        .into(binding.imgPostDetail)
+                }
+                viewModel.getTopicsForPost(item.id).observe(viewLifecycleOwner) { tags ->
+                    binding.chipGroupTags.removeAllViews()
+                    tags.forEach { tag ->
+                        val chip = Chip(requireContext()).apply {
+                            text = tag.name
+                            isClickable = false
+                            isCheckable = false
+                        }
+                        binding.chipGroupTags.addView(chip)
+                    }
                     viewModel.incrementInterestWeights(currentUserEmail, tags)
                 }
             }
 
-        }
 
-        // Настраивание кнопки закрытия
-        binding.toolbar.setNavigationOnClickListener {
-            dismiss() // Закрывает диалог
-        }
+            // Настраивание кнопки закрытия
+            binding.toolbar.setNavigationOnClickListener {
+                dismiss() // Закрывает диалог
+            }
+        } else
+            Log.d("DEBUG_DB", "При попытке просмотра поста пользователь не был найден!")
     }
 
     override fun onDestroyView() {

@@ -25,6 +25,8 @@ interface PostDao {
 """)
     fun getTopicsForPost(postId: Int): LiveData<List<TopicEntity>>
 
+    @Query("SELECT topics.* FROM topics INNER JOIN post_topic_cross_ref ON topics.id = post_topic_cross_ref.topic_id WHERE post_topic_cross_ref.post_id = :postId")
+    suspend fun getTopicsForPostSync(postId: Int): List<TopicEntity>
 
     // Получить все посты из таблицы 'posts'
     @Query("SELECT * FROM posts")

@@ -11,6 +11,7 @@ import kotlinx.coroutines.launch
 import com.example.homework6.FeedRankingUseCase
 import com.example.homework6.PostRepository
 import com.example.homework6.data.UserDao
+import com.example.homework6.data.entities.CommentEntity
 import com.example.homework6.data.entities.TopicEntity
 import com.example.homework6.data.entities.UserEntity
 
@@ -34,12 +35,12 @@ class FeedViewModel(
         }
     }
 
-    fun getUserByEmail(userEmail: String) {
-        viewModelScope.launch(Dispatchers.IO) {
-            val user = userDao.getUserByEmail(userEmail)
-            _currentUser.postValue(user)
-        }
-    }
+//    fun getUserByEmail(userEmail: String) {
+//        viewModelScope.launch(Dispatchers.IO) {
+//            val user = userDao.getUserByEmail(userEmail)
+//            _currentUser.postValue(user)
+//        }
+//    }
 
     // Загрузка постов, учитывая веса (интересы) пользователя
     fun loadPosts(userId: Int) {
@@ -64,8 +65,33 @@ class FeedViewModel(
             }
         }
     }
+    fun isLiked(email: String, postId: Int?): LiveData<Boolean> {
+        return postId?.let { repository.isLiked(email, it) }
+            ?: MutableLiveData(false)
+    }
+    fun toggleLike(email: String, postId: Int?) {
+        postId?.let { id ->
+            viewModelScope.launch {
+                repository.toggleLike(email, id)
+            }
+        }
+    }
 
+    fun hidePost(email: String, postId: Int?) {
+        postId?.let { id ->
+            viewModelScope.launch { repository.hidePost(email, id) }
+        }
+    }
+    fun getComments(postId: Int?): LiveData<List<CommentEntity>> {
+        return postId?.let { repository.getComments(it) } ?: MutableLiveData(emptyList())
+    }
 
+    fun sendComment(email: String, postId: Int?, content: String) {
+        if (content.isBlank() || postId == null) return
+        viewModelScope.launch {
+            repository.addComment(email, postId, content)
+        }
+    }
 }
 
 class FeedViewModelFactory(

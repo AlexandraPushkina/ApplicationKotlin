@@ -28,4 +28,7 @@
     <string name="login">Зарегистрироваться</string>
     <string name="choose_topics">Выберите темы (до 10):</string>
     <string name="forgot_password">Забыли пароль?</string>
+    <string name="add_comment">Написать комментарий</string>
+    <string name="user">Пользователь</string>
+    <string name="text_comment_here">Текст комментария здесь...</string>
 </resources>
