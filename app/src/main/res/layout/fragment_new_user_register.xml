@@ -2,7 +2,6 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:focusable="true"
@@ -10,40 +9,65 @@
     android:padding="16dp"
     android:background="?android:attr/colorBackground">
 
-    <!-- 2. Надпись "Введите почту" -->
-    <com.google.android.material.textfield.TextInputEditText
-        android:id="@+id/tvUserEmail"
-        android:layout_width="wrap_content"
+    <!-- Поле для ввода Почты -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/tilUserEmail"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:hint="@string/user_email_enter"
-        android:textSize="20sp"
         android:layout_marginBottom="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/tvUserPassword"
-        app:layout_constraintStart_toStartOf="@+id/tvUserPassword" />
+        app:layout_constraintBottom_toTopOf="@+id/tilUserPassword"
+        app:layout_constraintEnd_toEndOf="@+id/tilBio"
+        app:layout_constraintStart_toStartOf="@+id/tilBio">
 
-    <!-- 2. Надпись "Введите пароль" -->
-    <com.google.android.material.textfield.TextInputEditText
-        android:id="@+id/tvUserPassword"
-        android:layout_width="wrap_content"
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/tvUserEmail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/user_email_enter"
+            android:inputType="textEmailAddress"
+            android:textSize="18sp" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- Поле для ввода Пароля -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/tilUserPassword"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:hint="@string/user_password_enter"
-        android:textSize="20sp"
         android:layout_marginBottom="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/tvUserName"
-        app:layout_constraintStart_toStartOf="@+id/tvUserName" />
+        app:passwordToggleEnabled="true"
+        app:layout_constraintBottom_toTopOf="@+id/tilUserName"
+        app:layout_constraintEnd_toEndOf="@+id/tilBio"
+        app:layout_constraintStart_toStartOf="@+id/tilBio">
 
-    <!-- 2. Надпись "Введите имя пользователя" -->
-    <com.google.android.material.textfield.TextInputEditText
-        android:id="@+id/tvUserName"
-        android:layout_width="wrap_content"
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/tvUserPassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/user_password_enter"
+            android:inputType="textPassword"
+            android:textSize="18sp" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- Поле для ввода Имени пользователя -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/tilUserName"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:hint="@string/user_name_enter"
-        android:textSize="20sp"
         android:layout_marginBottom="8dp"
         app:layout_constraintBottom_toTopOf="@+id/tilBio"
-        app:layout_constraintStart_toStartOf="@+id/tilBio" />
+        app:layout_constraintEnd_toEndOf="@+id/tilBio"
+        app:layout_constraintStart_toStartOf="@+id/tilBio">
 
-    <!-- 3. Поле для ввода Bio (Центрируем по вертикали, но сдвигаем чуть выше) -->
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/tvUserName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/user_name_enter"
+            android:inputType="textPersonName"
+            android:textSize="18sp" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- 3. Поле для ввода Bio -->
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/tilBio"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -54,7 +78,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.35"
+        app:layout_constraintVertical_bias="0.45"
         app:layout_constraintWidth_percent="0.9">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -67,7 +91,7 @@
             android:maxLines="6" />
     </com.google.android.material.textfield.TextInputLayout>
 
-    <!-- 4. Заголовок для тем (Ниже поля Bio) -->
+    <!-- 4. Заголовок для тем -->
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/tvTopicsLabel"
         android:layout_width="wrap_content"
@@ -79,8 +103,7 @@
         app:layout_constraintStart_toStartOf="@+id/tilBio"
         app:layout_constraintTop_toBottomOf="@+id/tilBio" />
 
-    <!-- 5. Группа чипов (список тем) -->
-    <!-- singleSelection="true" означает, что можно выбрать только один вариант -->
+    <!-- 5. Группа чипов -->
     <com.google.android.material.chip.ChipGroup
         android:id="@+id/chipGroupTopics"
         android:layout_width="0dp"
@@ -92,47 +115,43 @@
         app:layout_constraintStart_toStartOf="@+id/tilBio"
         app:layout_constraintTop_toBottomOf="@+id/tvTopicsLabel">
 
-        <!-- Здесь программно (через Kotlin) нужно будет добавить Chip-ы.
-             Но для предпросмотра я добавил один пример (tools:visibility) -->
         <com.google.android.material.chip.Chip
             android:id="@+id/chipNature"
+            style="@style/CustomChipChoice"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/topic_nature"
-            style="@style/CustomChipChoice"
-            tools:visibility="visible" />
+            android:text="@string/topic_nature" />
+
         <com.google.android.material.chip.Chip
             android:id="@+id/chipCosmetics"
+            style="@style/CustomChipChoice"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/topic_cosmetics"
-            style="@style/CustomChipChoice"
-            tools:visibility="visible" />
+            android:text="@string/topic_cosmetics" />
+
         <com.google.android.material.chip.Chip
             android:id="@+id/chipArt"
+            style="@style/CustomChipChoice"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/topic_art"
-            style="@style/CustomChipChoice"
-            tools:visibility="visible" />
+            android:text="@string/topic_art" />
+
         <com.google.android.material.chip.Chip
             android:id="@+id/chipSport"
+            style="@style/CustomChipChoice"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/topic_sport"
-            style="@style/CustomChipChoice"
-            tools:visibility="visible" />
+            android:text="@string/topic_sport" />
+
         <com.google.android.material.chip.Chip
             android:id="@+id/chipFood"
+            style="@style/CustomChipChoice"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/topic_food"
-            style="@style/CustomChipChoice"
-            tools:visibility="visible" />
-
+            android:text="@string/topic_food" />
     </com.google.android.material.chip.ChipGroup>
 
-    <!-- 6. Кнопка (Ниже списка тем) -->
+    <!-- 6. Кнопка Регистрации -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnRegister"
         android:layout_width="0dp"
@@ -141,7 +160,6 @@
         android:padding="12dp"
         android:text="@string/register"
         app:layout_constraintEnd_toEndOf="@+id/tilBio"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/tilBio"
         app:layout_constraintTop_toBottomOf="@+id/chipGroupTopics" />
 
