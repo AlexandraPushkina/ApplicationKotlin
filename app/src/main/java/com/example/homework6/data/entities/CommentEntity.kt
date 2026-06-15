@@ -8,6 +8,7 @@ data class CommentEntity(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val postId: Int,
     val userId: Int,
+    val authorName: String,
     val content: String,
     val timestamp: Long = System.currentTimeMillis()
 )

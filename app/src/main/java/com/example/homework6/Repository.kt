@@ -82,10 +82,11 @@ class PostRepository(private val db: AppDatabase) {
     }
 
     suspend fun addComment(email: String, postId: Int, content: String) {
-        val userId = db.userDao().getUserByEmail(email)?.id ?: return
+        val user = db.userDao().getUserByEmail(email)?: return
         val comment = CommentEntity(
             postId = postId,
-            userId = userId,
+            userId = user.id,
+            authorName = user.username,
             content = content
         )
         db.InteractionDao().insertComment(comment)

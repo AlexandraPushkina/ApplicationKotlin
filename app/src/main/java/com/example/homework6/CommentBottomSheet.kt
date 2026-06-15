@@ -1,6 +1,7 @@
 package com.example.homework6
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,7 +16,7 @@ class CommentBottomSheet(
     private val viewModel: FeedViewModel
 ) : BottomSheetDialogFragment() {
 
-    private lateinit var binding: DialogCommentsBinding // Создай xml с RecyclerView и EditText
+    private lateinit var binding: DialogCommentsBinding
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = DialogCommentsBinding.inflate(inflater, container, false)
@@ -23,13 +24,14 @@ class CommentBottomSheet(
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val adapter = CommentAdapter() // адаптер для списка
+        val adapter = CommentAdapter() // адаптер для списка комментариев
         binding.rvComments.layoutManager = LinearLayoutManager(requireContext())
         binding.rvComments.adapter = adapter
 
         // Наблюдаем за комментариями
         viewModel.getComments(postId).observe(viewLifecycleOwner) { comments ->
-            adapter.submitList(comments){
+            Log.d("DEBUG_UI", "Получено комментариев: ${comments.size}")
+            adapter.submitList(comments) {
                 binding.rvComments.scrollToPosition(0)
             }
         }

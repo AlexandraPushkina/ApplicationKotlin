@@ -24,7 +24,7 @@ import com.example.homework6.data.entities.CommentEntity
                     LikeEntity::class,
                     HiddenPostEntity::class,
                     CommentEntity::class ],
-    version = 8, exportSchema = false)
+    version = 9, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
 
     // 2. Объявляем абстрактный метод для получения DAO

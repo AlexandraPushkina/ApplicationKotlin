@@ -94,7 +94,7 @@ class DialogPostDetailFragment : DialogFragment() {
             post?.let { item ->
                 binding.tvAuthorName.text = item.authorName
                 binding.tvPostTitle.text = item.title
-                binding.tvPostContent.text = item.content // Здесь полный текст
+                binding.tvPostContent.text = item.content
 
                 // Загрузка картинки
                 if (item.imageUrl != null) {
