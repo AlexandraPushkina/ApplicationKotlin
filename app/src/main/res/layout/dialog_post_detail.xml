@@ -81,8 +81,9 @@
                 android:layout_height="wrap_content"
                 android:paddingHorizontal="16dp"
                 android:paddingVertical="12dp"
-                android:textAppearance="?attr/textAppearanceTitleMedium"
-                android:textColor="?attr/colorOnSurface" />
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="?attr/colorOnSecondary" />
 
             <!-- Картинка (Ширина в экран) -->
             <com.google.android.material.imageview.ShapeableImageView
