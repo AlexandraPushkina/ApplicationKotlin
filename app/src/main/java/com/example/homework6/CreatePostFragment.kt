@@ -95,7 +95,9 @@ class CreatePostFragment : Fragment() {
         val content = binding.etContent.text.toString().trim()
         val imageUrl = binding.etImageUrl.text.toString().trim()
         val username = viewModel.getUsername()
-        val selectedTopicIds = getSelectedTopicIds()
+
+        val validTopicIds = getSelectedTopicIds()
+        val checkedChipsCount = binding.chipGroupTopics.checkedChipIds.size
 
         if (title.isBlank() || content.isEmpty()) {
             Toast.makeText(context, "Заполните все поля", Toast.LENGTH_SHORT).show()
@@ -103,21 +105,28 @@ class CreatePostFragment : Fragment() {
         } else {
             binding.tilTitle.error = null
         }
-        if (selectedTopicIds.isEmpty()) {
+
+        if (checkedChipsCount == 0) {
             Toast.makeText(context, "Выберите хотя бы одну тему", Toast.LENGTH_SHORT).show()
             return
         }
 
+        if (checkedChipsCount != validTopicIds.size) {
+            Toast.makeText(
+                requireContext(),
+                "Системная ошибка: выбраны несуществующие теги. Пожалуйста, обратитесь к разработчикам.",
+                Toast.LENGTH_LONG
+            ).show()
+            return
+        }
+
         if (username != null) {
-            // Подготовка данных
-            // Если поле картинки пустое -> записываем null
             val finalImageUrl = imageUrl.ifBlank { null }
-            val selectedTopicIds: List<Long> =
-                binding.chipGroupTopics.checkedChipIds.map { it.toLong() } // Получение списка ID
-            viewModel.createPost(title, content, finalImageUrl, username, selectedTopicIds)
+
+            val finalTopicIdsLong = validTopicIds.map { it.toLong() }
+            viewModel.createPost(title, content, finalImageUrl, username, finalTopicIdsLong)
         } else {
-            Toast.makeText(context, "Ошибка: вы не авторизованы",
-                                    Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Ошибка: вы не авторизованы", Toast.LENGTH_SHORT).show()
         }
     }
 
