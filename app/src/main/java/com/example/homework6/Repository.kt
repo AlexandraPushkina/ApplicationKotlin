@@ -95,5 +95,9 @@ class PostRepository(private val db: AppDatabase) {
         )
         db.InteractionDao().insertComment(comment)
     }
+
+    fun getLikedPosts(userId: Int): Flow<List<PostEntity>> {
+        return db.InteractionDao().getLikedPostsByUser(userId) // или postDao(), смотря куда вы добавили
+    }
 }
 

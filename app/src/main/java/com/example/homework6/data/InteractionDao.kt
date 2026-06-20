@@ -8,6 +8,7 @@ import androidx.room.Query
 import com.example.homework6.data.entities.CommentEntity
 import com.example.homework6.data.entities.HiddenPostEntity
 import com.example.homework6.data.entities.LikeEntity
+import com.example.homework6.data.entities.PostEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -24,6 +25,13 @@ interface InteractionDao {
 
     @Query("SELECT COUNT(*) FROM post_likes WHERE userId = :uId AND postId = :pId")
     suspend fun isLikedSync(uId: Int, pId: Int): Int
+
+    @Query("""
+    SELECT posts.* FROM posts
+    INNER JOIN post_likes ON posts.id = post_likes.postId
+    WHERE post_likes.userId = :userId
+""")
+    fun getLikedPostsByUser(userId: Int): Flow<List<PostEntity>>
 
     // Скрытие
     @Insert(onConflict = OnConflictStrategy.REPLACE)

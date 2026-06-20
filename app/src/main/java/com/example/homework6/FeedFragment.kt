@@ -37,7 +37,7 @@ class FeedFragment : Fragment() {
         setupRecyclerView()
 
         // 1. Создаем адаптер
-        val postsAdapter = PostsAdapter(mutableListOf()) { selectedPost ->
+        val postsAdapter = PostAdapter(mutableListOf()) { selectedPost ->
             val dialog = DialogPostDetailFragment.newInstance(selectedPost)
             dialog.show(parentFragmentManager, "PostDetail")
         }

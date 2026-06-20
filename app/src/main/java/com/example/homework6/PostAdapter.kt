@@ -7,10 +7,10 @@ import com.bumptech.glide.Glide
 import com.example.homework6.data.entities.PostEntity
 import com.example.homework6.databinding.ItemPostBinding
 
-class PostsAdapter(
+class PostAdapter(
     private val posts: MutableList<PostEntity>,
     private val onPostClick: (PostEntity) -> Unit
-) : RecyclerView.Adapter<PostsAdapter.PostViewHolder>() {
+) : RecyclerView.Adapter<PostAdapter.PostViewHolder>() {
 
     class PostViewHolder(val binding: ItemPostBinding) : RecyclerView.ViewHolder(binding.root)
 

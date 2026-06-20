@@ -13,13 +13,13 @@ import com.example.homework6.databinding.FragmentProfileBinding
 import com.example.homework6.extensions.EXTRA_USER_ID
 import com.example.homework6.viewmodels.AppViewModelFactory
 import com.example.homework6.viewmodels.ProfileViewModel
-import androidx.core.content.edit
+import androidx.recyclerview.widget.GridLayoutManager
 
 class ProfileFragment : Fragment() {
 
     private var _binding: FragmentProfileBinding? = null
     private val binding get() = _binding!!
-
+    private lateinit var postAdapter: PostAdapter
 
     // Подключаем ViewModel
     private val viewModel: ProfileViewModel by viewModels {
@@ -30,7 +30,7 @@ class ProfileFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentProfileBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -46,24 +46,22 @@ class ProfileFragment : Fragment() {
 
         // 2. ПОДПИСЫВАЕМСЯ на список тем (Чипы)
         viewModel.topicNames.observe(viewLifecycleOwner) { topicNames ->
-            // Очищаем старые, чтобы не дублировались
-            binding.chipGroupInterests.removeAllViews()
-
-            // Создаем чипы для каждого названия
+            binding.chipGroupInterests.removeAllViews() // Очищаем старые
             for (name in topicNames) {
                 addChipToGroup(name)
             }
         }
 
-        // 3. ЗАПУСКАЕМ ЗАГРУЗКУ
+        // 3. ПОЛУЧАЕМ ID И ЗАПУСКАЕМ ЗАГРУЗКУ
         val userId = requireActivity().intent.getIntExtra(EXTRA_USER_ID, -1)
 
-        if (userId != null) {
+        if (userId != -1) {
             viewModel.loadProfile(userId)
         } else {
             Toast.makeText(context, "Ошибка: пользователь не найден", Toast.LENGTH_SHORT).show()
         }
 
+        // 4. НАСТРОЙКА КНОПКИ ВЫХОДА
         binding.toolbarProfile.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.action_logout -> {
@@ -73,16 +71,39 @@ class ProfileFragment : Fragment() {
                 else -> false
             }
         }
+
+        postAdapter = PostAdapter(
+            posts = mutableListOf(),
+            onPostClick = {clickedPost ->
+                val dialog = DialogPostDetailFragment()
+                val bundle = Bundle()
+                bundle.putParcelable("POST_DATA", clickedPost)
+                dialog.arguments = bundle
+
+                dialog.show(parentFragmentManager, "PostDetailDialog")
+            }
+        )
+
+        binding.recyclerViewLikedPosts.apply {
+            layoutManager = GridLayoutManager(context, 2)
+            adapter = postAdapter
+            isNestedScrollingEnabled = false
+        }
+
+        // 6. ПОДПИСКА НА ПОНРАВИВШИЕСЯ ПОСТЫ
+        viewModel.likedPosts.observe(viewLifecycleOwner) { posts ->
+            postAdapter.updatePosts(posts) // В прошлом сообщении мы назвали метод updateData
+            binding.tvLikedPostsLabel.visibility = if (posts.isEmpty()) View.GONE else View.VISIBLE
+        }
     }
 
     private fun performLogout() {
         // 1. ОЧИСТКА ДАННЫХ ПОЛЬЗОВАТЕЛЯ
         val sharedPref = requireActivity().getSharedPreferences("AppPrefs", Context.MODE_PRIVATE)
-       sharedPref.edit { clear() }
+        sharedPref.edit().clear().apply()
 
         // 2. ПЕРЕХОД НА ЭКРАН ЛОГИНА
         val intent = Intent(requireContext(), LoginActivity::class.java)
-
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
     }
