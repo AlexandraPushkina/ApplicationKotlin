@@ -31,4 +31,5 @@
     <string name="add_comment">Написать комментарий</string>
     <string name="user">Пользователь</string>
     <string name="text_comment_here">Текст комментария здесь...</string>
+    <string name="search_by_title_or_tags">Поиск по названию или тегам...</string>
 </resources>

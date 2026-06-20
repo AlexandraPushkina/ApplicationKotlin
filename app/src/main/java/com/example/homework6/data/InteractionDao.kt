@@ -8,6 +8,7 @@ import androidx.room.Query
 import com.example.homework6.data.entities.CommentEntity
 import com.example.homework6.data.entities.HiddenPostEntity
 import com.example.homework6.data.entities.LikeEntity
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface InteractionDao {

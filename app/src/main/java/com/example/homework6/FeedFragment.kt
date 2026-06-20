@@ -19,7 +19,7 @@ class FeedFragment : Fragment() {
 
     private var _binding: FragmentFeedBinding? = null
     private val binding get() = _binding!!
-    // viewModel - связывает этот фрагмент и бд
+
     private val viewModel: FeedViewModel by viewModels {
         AppViewModelFactory(requireActivity().application)
     }
@@ -34,68 +34,61 @@ class FeedFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setupRecyclerView() // Настройка LayoutManager
+        setupRecyclerView()
 
-        val userId = requireActivity().intent.getIntExtra(EXTRA_USER_ID, -1)
-        Log.d("MyFeedDebug", "1. Получен userId из Intent: $userId")
-
-        // Если юзера нет, то выходим на экран регистрации
-        if (userId == -1) {
-            kickUserOut("Ошибка сессии. Пожалуйста, войдите снова.")
-            return
-        }
-        // Создание адаптера для (пока что пустой) ленты постов. Ожидание обновления данных
+        // 1. Создаем адаптер
         val postsAdapter = PostsAdapter(mutableListOf()) { selectedPost ->
             val dialog = DialogPostDetailFragment.newInstance(selectedPost)
             dialog.show(parentFragmentManager, "PostDetail")
         }
-
         binding.recyclerViewFeed.adapter = postsAdapter
 
-        viewModel.feedPosts.observe(viewLifecycleOwner) { loadedPosts ->
-            Log.d("MyFeedDebug", "4. Пришел список постов. Размер списка: ${loadedPosts.size}")
-            // Когда посты загрузятся, создаем адаптер и показываем их
-            binding.recyclerViewFeed.adapter =
-                PostsAdapter(loadedPosts.toMutableList()) { selectedPost ->
-                    val dialog = DialogPostDetailFragment.newInstance(selectedPost)
-                    dialog.show(parentFragmentManager, "PostDetail")
-                }
+        // 2. Настраиваем SearchView
+        binding.searchView.setOnQueryTextListener(object : androidx.appcompat.widget.SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean = true
+            override fun onQueryTextChange(newText: String?): Boolean {
+                viewModel.setSearchQuery(newText ?: "")
+                return true
+            }
+        })
+
+        // 3. ЕДИНСТВЕННЫЙ наблюдатель для списка постов
+        // Сюда будут приходить данные и от поиска, и при обычном старте
+        viewModel.posts.observe(viewLifecycleOwner) { loadedPosts ->
+            Log.d("MyFeedDebug", "Посты пришли в фрагмент: ${loadedPosts.size}")
+            postsAdapter.updatePosts(loadedPosts)
+        }
+
+        // 4. Проверка пользователя
+        val userId = requireActivity().intent.getIntExtra(EXTRA_USER_ID, -1)
+        if (userId == -1) {
+            kickUserOut("Ошибка сессии.")
+            return
         }
 
         viewModel.currentUser.observe(viewLifecycleOwner) { user ->
             if (user == null) {
-                Log.d("MyFeedDebug", "3. ОШИБКА: База данных вернула null для юзера!")
-                // Если база данных вернула пустоту (например, юзера удалили из БД)
-                kickUserOut("Пользователь не найден в базе данных.")
+                kickUserOut("Пользователь не найден.")
             } else {
-                Log.d("MyFeedDebug", "3. Юзер найден в БД! Имя: ${user.username}. Идем искать посты...")
-                viewModel.loadPosts(user.id)
+                Log.d("MyFeedDebug", "Пользователь $userId авторизован.")
             }
         }
-        Log.d("MyFeedDebug", "2. Даем команду ViewModel искать юзера с id = $userId")
         viewModel.getUser(userId)
     }
 
+    private fun setupRecyclerView() {
+        binding.recyclerViewFeed.layoutManager = GridLayoutManager(context, 2)
+    }
+
     private fun kickUserOut(message: String) {
-        Toast.makeText(requireContext(),
-            message,
-            Toast.LENGTH_LONG).show()
-
-        // Создание Intent для перехода на экран Входа/Регистрации
+        Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
         val intent = Intent(requireContext(), AuthValidator::class.java)
-
-        // Очищение истории (чтобы кнопка "Назад" не вернула обратно в Feed)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
     }
 
-    private fun setupRecyclerView() {
-        // настройка сетки (2 колонки)
-        binding.recyclerViewFeed.layoutManager = GridLayoutManager(context, 2)
-    }
-
     override fun onDestroyView() {
         super.onDestroyView()
-        _binding = null // Очищение ссылки во избежание утечек памяти
+        _binding = null
     }
 }

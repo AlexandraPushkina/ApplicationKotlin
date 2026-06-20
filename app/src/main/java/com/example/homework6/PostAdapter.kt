@@ -8,9 +8,7 @@ import com.example.homework6.data.entities.PostEntity
 import com.example.homework6.databinding.ItemPostBinding
 
 class PostsAdapter(
-
-
-    private val posts: List<PostEntity>,
+    private val posts: MutableList<PostEntity>,
     private val onPostClick: (PostEntity) -> Unit
 ) : RecyclerView.Adapter<PostsAdapter.PostViewHolder>() {
 
@@ -48,20 +46,9 @@ class PostsAdapter(
     }
     override fun getItemCount(): Int = posts.size
 
-    // перемещение
-    fun onItemMove(fromPosition: Int, toPosition: Int) {
-        // Если from < to, значит тянем вниз, иначе вверх
-        if (fromPosition < toPosition) {
-            for (i in fromPosition until toPosition) {
-                java.util.Collections.swap(posts, i, i + 1)
-            }
-        } else {
-            for (i in fromPosition downTo toPosition + 1) {
-                java.util.Collections.swap(posts, i, i - 1)
-            }
-        }
-
-        // Сообщение адаптеру, что элемент визуально переместился
-        notifyItemMoved(fromPosition, toPosition)
+    fun updatePosts(newPosts: List<PostEntity>) {
+        this.posts.clear()
+        this.posts.addAll(newPosts)
+        notifyDataSetChanged()
     }
 }

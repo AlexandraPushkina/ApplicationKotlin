@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.homework6.data.entities.PostEntity
 import kotlinx.coroutines.Dispatchers
@@ -14,6 +15,13 @@ import com.example.homework6.data.UserDao
 import com.example.homework6.data.entities.CommentEntity
 import com.example.homework6.data.entities.TopicEntity
 import com.example.homework6.data.entities.UserEntity
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 
 class FeedViewModel(
     private val userDao: UserDao,
@@ -27,6 +35,27 @@ class FeedViewModel(
     private val _feedPosts = MutableLiveData<List<PostEntity>>()
     val feedPosts: LiveData<List<PostEntity>> = _feedPosts
 
+    private val _searchQuery = MutableStateFlow("")
+
+    @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
+    val posts: LiveData<List<PostEntity>> = _searchQuery
+        .debounce(300) // Ждем 300мс после последнего ввода символа
+        .distinctUntilChanged() // Игнорируем, если текст не изменился
+        .flatMapLatest { query ->
+            if (query.isBlank()) {
+                repository.getAllPostsFlow()
+            } else {
+                // Оборачиваем запрос в %, чтобы искать подстроку в любом месте
+                repository.searchPosts("%$query%")
+            }
+        }
+        .asLiveData()
+
+    fun setSearchQuery(text: String) {
+        _searchQuery.value = text
+    }
+
+
     // Получение пользователя по ID
     fun getUser(userId: Int) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -34,13 +63,6 @@ class FeedViewModel(
             _currentUser.postValue(user)
         }
     }
-
-//    fun getUserByEmail(userEmail: String) {
-//        viewModelScope.launch(Dispatchers.IO) {
-//            val user = userDao.getUserByEmail(userEmail)
-//            _currentUser.postValue(user)
-//        }
-//    }
 
     // Загрузка постов, учитывая веса (интересы) пользователя
     fun loadPosts(userId: Int) {

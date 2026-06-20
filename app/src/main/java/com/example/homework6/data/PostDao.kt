@@ -10,6 +10,7 @@ import androidx.room.Transaction
 import com.example.homework6.data.entities.PostTopicCrossRef
 import com.example.homework6.data.entities.PostWithTopics
 import com.example.homework6.data.entities.TopicEntity
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface PostDao {
@@ -31,6 +32,9 @@ interface PostDao {
     // Получить все посты из таблицы 'posts'
     @Query("SELECT * FROM posts")
     suspend fun getAllPosts(): List<PostWithTopics>
+
+    @Query("SELECT * FROM posts")
+    fun getAllPostsFlow(): Flow<List<PostEntity>>
 
     // Посчитать количество постов
     @Query("SELECT COUNT(*) FROM posts")
@@ -55,4 +59,12 @@ interface PostDao {
             "WHERE user_id = :userId")
     suspend fun anonymizeUserPosts(userId: Long)
 
+    @Query("""
+    SELECT DISTINCT posts.* FROM posts
+    LEFT JOIN post_topic_cross_ref ON posts.id = post_topic_cross_ref.post_id
+    LEFT JOIN topics ON post_topic_cross_ref.topic_id = topics.id
+    WHERE LOWER(posts.title) LIKE LOWER(:query) 
+       OR LOWER(topics.name) LIKE LOWER(:query)
+""")
+    fun searchPosts(query: String): Flow<List<PostEntity>>
 }

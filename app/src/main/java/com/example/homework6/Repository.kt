@@ -10,6 +10,7 @@ import com.example.homework6.data.entities.PostEntity
 import com.example.homework6.data.entities.PostTopicCrossRef
 import com.example.homework6.data.entities.PostWithTopics
 import com.example.homework6.data.entities.TopicEntity
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.runBlocking
 
 // Вызывает команды, предоставляющие данные с бд.
@@ -18,6 +19,11 @@ class PostRepository(private val db: AppDatabase) {
     // Получение постов вместе с темами из БД
     suspend fun getAllPostsWithTopics(): List<PostWithTopics> {
         return db.postDao().getAllPosts()
+    }
+
+    // В PostRepository
+    fun getAllPostsFlow(): Flow<List<PostEntity>> {
+        return db.postDao().getAllPostsFlow()
     }
 
     suspend fun createPostWithTopics(post: PostEntity, topicIds: List<Long>) {
@@ -51,12 +57,6 @@ class PostRepository(private val db: AppDatabase) {
         val user = runBlocking { getUserByEmail(email) } ?: return MutableLiveData(false)
         return db.InteractionDao().isLiked(user.id, postId)
     }
-//    suspend fun isLikedSuspended(email: String, postId: Int): Boolean {
-//        //Возвращает Int > 0
-//        val user = getUserByEmail(email) ?: return false
-//        val userId = user.id
-//        return db.InteractionDao().isLikedSync(userId, postId) > 0
-//    }
     suspend fun toggleLike(email: String, postId: Int) {
         val user = getUserByEmail(email) ?: return
         val userId = user.id
@@ -79,6 +79,10 @@ class PostRepository(private val db: AppDatabase) {
     }
     fun getComments(postId: Int): LiveData<List<CommentEntity>> {
         return db.InteractionDao().getCommentsForPost(postId)
+    }
+
+    fun searchPosts(text: String): Flow<List<PostEntity>> {
+        return db.postDao().searchPosts(text)
     }
 
     suspend fun addComment(email: String, postId: Int, content: String) {
