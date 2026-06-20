@@ -32,4 +32,6 @@
     <string name="user">Пользователь</string>
     <string name="text_comment_here">Текст комментария здесь...</string>
     <string name="search_by_title_or_tags">Поиск по названию или тегам...</string>
+    <string name="profile_log_out">Выйти из аккаунта</string>
+    <string name="profile">Профиль</string>
 </resources>

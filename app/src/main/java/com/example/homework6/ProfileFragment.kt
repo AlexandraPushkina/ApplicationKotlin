@@ -1,5 +1,7 @@
 package com.example.homework6
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,6 +13,7 @@ import com.example.homework6.databinding.FragmentProfileBinding
 import com.example.homework6.extensions.EXTRA_USER_ID
 import com.example.homework6.viewmodels.AppViewModelFactory
 import com.example.homework6.viewmodels.ProfileViewModel
+import androidx.core.content.edit
 
 class ProfileFragment : Fragment() {
 
@@ -60,6 +63,28 @@ class ProfileFragment : Fragment() {
         } else {
             Toast.makeText(context, "Ошибка: пользователь не найден", Toast.LENGTH_SHORT).show()
         }
+
+        binding.toolbarProfile.setOnMenuItemClickListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.action_logout -> {
+                    performLogout()
+                    true
+                }
+                else -> false
+            }
+        }
+    }
+
+    private fun performLogout() {
+        // 1. ОЧИСТКА ДАННЫХ ПОЛЬЗОВАТЕЛЯ
+        val sharedPref = requireActivity().getSharedPreferences("AppPrefs", Context.MODE_PRIVATE)
+       sharedPref.edit { clear() }
+
+        // 2. ПЕРЕХОД НА ЭКРАН ЛОГИНА
+        val intent = Intent(requireContext(), LoginActivity::class.java)
+
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
     }
 
     // Вспомогательная функция для красивого создания чипов (UI only)
