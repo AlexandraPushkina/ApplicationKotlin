@@ -67,6 +67,7 @@ dependencies {
     implementation(libs.androidx.core.splashscreen)  //SplashScreen - первый экран, который
                                                     // пользователь видит при запуске приложения.
     implementation(libs.lottie)
+    implementation(libs.androidx.swiperefreshlayout)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)

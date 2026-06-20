@@ -20,6 +20,7 @@ import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 
@@ -38,16 +39,12 @@ class FeedViewModel(
     private val _searchQuery = MutableStateFlow("")
 
     @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
-    val posts: LiveData<List<PostEntity>> = _searchQuery
-        .debounce(300) // Ждем 300мс после последнего ввода символа
-        .distinctUntilChanged() // Игнорируем, если текст не изменился
+    val searchResults: LiveData<List<PostEntity>> = _searchQuery
+        .debounce(300)
+        .distinctUntilChanged()
+        .filter { it.isNotBlank() }
         .flatMapLatest { query ->
-            if (query.isBlank()) {
-                repository.getAllPostsFlow()
-            } else {
-                // Оборачиваем запрос в %, чтобы искать подстроку в любом месте
-                repository.searchPosts("%$query%")
-            }
+            repository.searchPosts("%$query%")
         }
         .asLiveData()
 
@@ -56,10 +53,16 @@ class FeedViewModel(
     }
 
 
-    // Получение пользователя по ID
-    fun getUser(userId: Int) {
+    // Получение пользователя по ID или по email
+    fun getUser(userId: Int? = null, email: String? = null) {
         viewModelScope.launch(Dispatchers.IO) {
-            val user = userDao.getUserById(userId)
+            val user = if (!email.isNullOrBlank()) {
+               userDao.getUserByEmail(email)
+            } else if (userId != null) {
+                userDao.getUserById(userId)
+            } else {
+                null
+            }
             _currentUser.postValue(user)
         }
     }

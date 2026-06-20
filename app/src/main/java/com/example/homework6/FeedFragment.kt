@@ -1,5 +1,6 @@
 package com.example.homework6
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -36,44 +37,71 @@ class FeedFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         setupRecyclerView()
 
-        // 1. Создаем адаптер
         val postsAdapter = PostAdapter(mutableListOf()) { selectedPost ->
             val dialog = DialogPostDetailFragment.newInstance(selectedPost)
             dialog.show(parentFragmentManager, "PostDetail")
         }
         binding.recyclerViewFeed.adapter = postsAdapter
 
-        // 2. Настраиваем SearchView
+        // 1. Настраиваем SearchView
         binding.searchView.setOnQueryTextListener(object : androidx.appcompat.widget.SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean = true
             override fun onQueryTextChange(newText: String?): Boolean {
+                if (newText.isNullOrBlank()) {
+                    // Если стерли текст, возвращаем на экран нашу отранжированную ленту
+                    viewModel.feedPosts.value?.let { postsAdapter.updatePosts(it) }
+                }
                 viewModel.setSearchQuery(newText ?: "")
                 return true
             }
         })
 
-        // 3. ЕДИНСТВЕННЫЙ наблюдатель для списка постов
-        // Сюда будут приходить данные и от поиска, и при обычном старте
-        viewModel.posts.observe(viewLifecycleOwner) { loadedPosts ->
-            Log.d("MyFeedDebug", "Посты пришли в фрагмент: ${loadedPosts.size}")
-            postsAdapter.updatePosts(loadedPosts)
-        }
+        // 2. Свайп для обновления
+        binding.swipeRefreshLayout.setOnRefreshListener {
+            val sharedPref = requireContext().getSharedPreferences("AppPrefs", Context.MODE_PRIVATE)
+            val currentEmail = sharedPref.getString("current_user_email", null)
 
-        // 4. Проверка пользователя
-        val userId = requireActivity().intent.getIntExtra(EXTRA_USER_ID, -1)
-        if (userId == -1) {
-            kickUserOut("Ошибка сессии.")
-            return
-        }
-
-        viewModel.currentUser.observe(viewLifecycleOwner) { user ->
-            if (user == null) {
-                kickUserOut("Пользователь не найден.")
+            if (currentEmail != null) {
+                viewModel.getUser(email = currentEmail)
             } else {
-                Log.d("MyFeedDebug", "Пользователь $userId авторизован.")
+                binding.swipeRefreshLayout.isRefreshing = false
+                Toast.makeText(context, "Вы не авторизованы", Toast.LENGTH_SHORT).show()
             }
         }
-        viewModel.getUser(userId)
+
+        // 3. Наблюдаем за пользователем
+        viewModel.currentUser.observe(viewLifecycleOwner) { user ->
+            if (user != null) {
+                Log.d("MyFeedDebug", "Пользователь ${user.id} авторизован.")
+                viewModel.loadPosts(user.id) // Запускаем ранжирование
+            } else {
+                binding.swipeRefreshLayout.isRefreshing = false
+                kickUserOut("Пользователь не найден.")
+            }
+        }
+
+        // 4. Наблюдаем за feedPosts
+        viewModel.feedPosts.observe(viewLifecycleOwner) { loadedPosts ->
+            Log.d("DEBUG_FEED", "Отранжированные посты: ${loadedPosts.size}")
+            // Обновляем список, если сейчас мы не ищем текст
+            if (binding.searchView.query.isNullOrBlank()) {
+                postsAdapter.updatePosts(loadedPosts)
+            }
+            binding.swipeRefreshLayout.isRefreshing = false
+        }
+
+        // 5. Наблюдаем за searchResults
+        viewModel.searchResults.observe(viewLifecycleOwner) { searchedPosts ->
+            postsAdapter.updatePosts(searchedPosts)
+        }
+
+        // 6. Первоначальный запуск
+        val userId = requireActivity().intent.getIntExtra(EXTRA_USER_ID, -1)
+        if (userId != -1) {
+            viewModel.getUser(userId)
+        } else {
+            kickUserOut("Ошибка сессии. Пользователь не найден")
+        }
     }
 
     private fun setupRecyclerView() {
