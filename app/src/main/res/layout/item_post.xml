@@ -46,7 +46,17 @@
             android:textColor="@android:color/black"
             android:textStyle="bold"/>
 
-        <!-- ID поста (для отладки или UI) -->
+        <TextView
+            android:id="@+id/tvPostDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="6dp"
+            android:paddingEnd="6dp"
+            android:paddingBottom="6dp"
+            android:textSize="10sp"
+            android:textColor="#9E9E9E"/>
+
+        <!-- ID поста -->
         <TextView
             android:id="@+id/tvPostId"
             android:layout_width="match_parent"

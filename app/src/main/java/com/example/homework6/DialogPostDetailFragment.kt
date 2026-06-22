@@ -13,6 +13,7 @@ import com.bumptech.glide.Glide
 import com.example.homework6.data.AppDatabase
 import com.example.homework6.data.entities.PostEntity
 import com.example.homework6.databinding.DialogPostDetailBinding
+import com.example.homework6.utils.DateUtils
 import com.example.homework6.viewmodels.FeedViewModel
 import com.example.homework6.viewmodels.FeedViewModelFactory
 import com.google.android.material.chip.Chip
@@ -95,6 +96,7 @@ class DialogPostDetailFragment : DialogFragment() {
                 binding.tvAuthorName.text = item.authorName
                 binding.tvPostTitle.text = item.title
                 binding.tvPostContent.text = item.content
+                binding.tvPostDate.text = DateUtils.formatPostDate(item.createdAt)
 
                 // Загрузка картинки
                 if (item.imageUrl != null) {

@@ -19,47 +19,69 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             app:navigationIcon="@drawable/ic_close"
-            app:title="" />
+            app:title="">
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_gravity="end"
-            android:orientation="horizontal"
-            android:paddingEnd="8dp">
+            <!-- Контейнер внутри тулбара для выравнивания элементов -->
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
-            <ImageButton
-                android:id="@+id/btnLike"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:layout_margin="5dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="Like"
-                android:src="@drawable/ic_heart_outline"
-                app:tint="?attr/colorOnSurface" />
+                <!-- Дата поста (Слева) -->
+                <TextView
+                    android:id="@+id/tvPostDate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:textColor="#808080"
+                    android:textSize="12sp"
+                    android:textStyle="italic"
+                    tools:text="22 Июн 2026, 14:30" />
 
-            <ImageButton
-                android:id="@+id/btnComment"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:layout_margin="5dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:src="@drawable/ic_comment"
-                app:tint="?attr/colorOnSurface" />
+                <!-- Кнопки (Справа) -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:orientation="horizontal"
+                    android:paddingEnd="8dp">
 
-            <ImageButton
-                android:id="@+id/btnHide"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:layout_margin="5dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="Hide"
-                android:src="@drawable/ic_eye_open"
-                app:tint="?attr/colorOnSurface" />
+                    <ImageButton
+                        android:id="@+id/btnLike"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_margin="5dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:contentDescription="Like"
+                        android:src="@drawable/ic_heart_outline"
+                        app:tint="?attr/colorOnSurface" />
 
-        </LinearLayout>
+                    <ImageButton
+                        android:id="@+id/btnComment"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_margin="5dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:src="@drawable/ic_comment"
+                        app:tint="?attr/colorOnSurface" />
 
+                    <ImageButton
+                        android:id="@+id/btnHide"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_margin="5dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:contentDescription="Hide"
+                        android:src="@drawable/ic_eye_open"
+                        app:tint="?attr/colorOnSurface" />
+
+                </LinearLayout>
+            </RelativeLayout>
+
+        </com.google.android.material.appbar.MaterialToolbar>
     </com.google.android.material.appbar.AppBarLayout>
+
 
     <!-- ПРОКРУЧИВАЕМЫЙ КОНТЕНТ -->
     <androidx.core.widget.NestedScrollView

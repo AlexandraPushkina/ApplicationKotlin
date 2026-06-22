@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.homework6.data.entities.PostEntity
 import com.example.homework6.databinding.ItemPostBinding
+import com.example.homework6.utils.DateUtils
 
 class PostAdapter(
     private val posts: MutableList<PostEntity>,
@@ -25,6 +26,7 @@ class PostAdapter(
         with(holder.binding) {
             tvAuthorName.text = post.authorName
             tvPostTitle.text = post.title
+            tvPostDate.text = DateUtils.formatPostDate(post.createdAt)
 
             // Если есть ссылка, скачает, если null - то картинка по умолчанию
             if (post.imageUrl != null) {
