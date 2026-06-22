@@ -18,3 +18,12 @@ object InteractionWeights {
     // Пользователь нажал "Не показывать больше"
     const val DONT_SHOW_AGAIN = -10
 }
+
+object RecommendationAlgorithm {
+    // Коэффициент затухания (настраиваемый)
+    const val TIME_DECAY = 0.05
+    const val ONE_HOUR_ON_MILLIS = 60 * 60 * 1000L
+    const val ONE_DAY_IN_MILLIS = 24 * 60 * 60 * 1000L
+    const val MILLISECOND = 1000.0
+    const val SECOND = 60
+}

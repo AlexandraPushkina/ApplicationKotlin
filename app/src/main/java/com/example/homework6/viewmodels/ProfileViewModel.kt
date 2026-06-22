@@ -3,7 +3,6 @@ package com.example.homework6.viewmodels
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.homework6.PostRepository
@@ -64,7 +63,7 @@ class ProfileViewModel(private val db: AppDatabase,
         }
 
     private suspend fun fetchAndProcessInterests(userId: Int) {
-        val allUserInterests = db.UserInterestsDao().getUserInterests(userId)
+        val allUserInterests = db.userInterestsDao().getUserInterests(userId)
         val positiveTopicIds = allUserInterests
             .filter { it.weight > 0 }
             .map { it.topicId }

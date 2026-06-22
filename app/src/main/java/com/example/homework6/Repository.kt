@@ -42,7 +42,7 @@ class PostRepository(private val db: AppDatabase) {
     suspend fun getUserByEmail(email: String) = db.userDao().getUserByEmail(email)
 
     suspend fun getUserWeights(userId: Int): Map<Int, Int> {
-        return db.UserInterestsDao().getUserInterests(userId).associate { it.topicId to it.weight }
+        return db.userInterestsDao().getUserInterests(userId).associate { it.topicId to it.weight }
     }
 
     suspend fun incrementInterestWeight(userId: Int, topicId: Int) {
@@ -55,30 +55,30 @@ class PostRepository(private val db: AppDatabase) {
 
     fun isLiked(email: String, postId: Int): LiveData<Boolean> {
         val user = runBlocking { getUserByEmail(email) } ?: return MutableLiveData(false)
-        return db.InteractionDao().isLiked(user.id, postId)
+        return db.interactionDao().isLiked(user.id, postId)
     }
     suspend fun toggleLike(email: String, postId: Int) {
         val user = getUserByEmail(email) ?: return
         val userId = user.id
-        val alreadyLiked = db.InteractionDao().isLikedSync(userId, postId)
+        val alreadyLiked = db.interactionDao().isLikedSync(userId, postId)
         if (alreadyLiked > 0) {
-            db.InteractionDao().deleteLike(userId, postId)
+            db.interactionDao().deleteLike(userId, postId)
         } else {
-            db.InteractionDao().insertLike(LikeEntity(userId = userId, postId = postId))
+            db.interactionDao().insertLike(LikeEntity(userId = userId, postId = postId))
         }
     }
 
     suspend fun hidePost(email: String, postId: Int) {
         val user = getUserByEmail(email) ?: return
         val userId = user.id
-        db.InteractionDao().hidePost(HiddenPostEntity(userId = userId, postId = postId))
+        db.interactionDao().hidePost(HiddenPostEntity(userId = userId, postId = postId))
         val tags = db.postDao().getTopicsForPostSync(postId)
         tags.forEach { tag ->
-            db.UserInterestsDao().updateInterestWeight(user.id, tag.id, -5)
+            db.userInterestsDao().updateInterestWeight(user.id, tag.id, -5)
         }
     }
     fun getComments(postId: Int): LiveData<List<CommentEntity>> {
-        return db.InteractionDao().getCommentsForPost(postId)
+        return db.interactionDao().getCommentsForPost(postId)
     }
 
     fun searchPosts(text: String): Flow<List<PostEntity>> {
@@ -93,11 +93,11 @@ class PostRepository(private val db: AppDatabase) {
             authorName = user.username,
             content = content
         )
-        db.InteractionDao().insertComment(comment)
+        db.interactionDao().insertComment(comment)
     }
 
     fun getLikedPosts(userId: Int): Flow<List<PostEntity>> {
-        return db.InteractionDao().getLikedPostsByUser(userId) // или postDao(), смотря куда вы добавили
+        return db.interactionDao().getLikedPostsByUser(userId) // или postDao(), смотря куда вы добавили
     }
 }
 

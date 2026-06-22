@@ -27,19 +27,16 @@ import kotlinx.parcelize.Parcelize
 data class PostEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
-
     @ColumnInfo(name = "user_id")
     val userId: Int,
-
     @ColumnInfo(name = "author_name")
     val authorName: String,
-
     @ColumnInfo(name = "title")
     val title: String,
-
     @ColumnInfo(name = "content")
     val content: String,
-
     @ColumnInfo(name = "image_url")
-    val imageUrl: String? = null
+    val imageUrl: String? = null,
+    @ColumnInfo(name = "created_at")
+    val createdAt: Long = System.currentTimeMillis()
 ) : Parcelable

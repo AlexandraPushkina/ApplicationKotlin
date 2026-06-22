@@ -24,11 +24,11 @@ class ContentInteractionsViewModel(private val db: AppDatabase) : ViewModel() {
                     topicId = topicId,
                     weight = 0
                 )
-                db.UserInterestsDao().insertInterestIfNotExists(newInterest)
+                db.userInterestsDao().insertInterestIfNotExists(newInterest)
 
                 // 2. ОБНОВЛЕНИЕ ВЕСА:
                 // Прибавляем или отнимаем переданное значение (weightDelta)
-                db.UserInterestsDao().updateInterestWeight(userId, topicId, weightDelta)
+                db.userInterestsDao().updateInterestWeight(userId, topicId, weightDelta)
 
                 // Для отладки (потом можно удалить):
                 Log.d("ContentInteractions", "User $userId interacted with Topic $topicId. Weight changed by: $weightDelta")

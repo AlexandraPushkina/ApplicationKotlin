@@ -114,41 +114,6 @@
         app:layout_constraintEnd_toEndOf="@+id/tilBio"
         app:layout_constraintStart_toStartOf="@+id/tilBio"
         app:layout_constraintTop_toBottomOf="@+id/tvTopicsLabel">
-
-        <com.google.android.material.chip.Chip
-            android:id="@+id/chipNature"
-            style="@style/CustomChipChoice"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/topic_nature" />
-
-        <com.google.android.material.chip.Chip
-            android:id="@+id/chipCosmetics"
-            style="@style/CustomChipChoice"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/topic_cosmetics" />
-
-        <com.google.android.material.chip.Chip
-            android:id="@+id/chipArt"
-            style="@style/CustomChipChoice"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/topic_art" />
-
-        <com.google.android.material.chip.Chip
-            android:id="@+id/chipSport"
-            style="@style/CustomChipChoice"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/topic_sport" />
-
-        <com.google.android.material.chip.Chip
-            android:id="@+id/chipFood"
-            style="@style/CustomChipChoice"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/topic_food" />
     </com.google.android.material.chip.ChipGroup>
 
     <!-- 6. Кнопка Регистрации -->

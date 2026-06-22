@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.example.homework6.data.entities.TopicEntity
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface TopicDao {
@@ -14,6 +15,9 @@ interface TopicDao {
 
     @Query("SELECT * FROM topics")
     suspend fun getAllTopicsList():List<TopicEntity>
+
+    @Query("SELECT * FROM topics")
+    fun getAllTopicsFlow(): Flow<List<TopicEntity>>
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertAllTopics(topics: List<TopicEntity>)

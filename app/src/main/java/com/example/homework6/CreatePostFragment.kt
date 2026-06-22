@@ -12,6 +12,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.example.homework6.data.entities.TopicEntity
 import com.example.homework6.databinding.FragmentCreatePostBinding
+import com.example.homework6.extensions.getNameWithEmoji
 import com.example.homework6.viewmodels.AppViewModelFactory
 import com.example.homework6.viewmodels.CreatePostViewModel
 import com.google.android.material.chip.Chip
@@ -72,7 +73,7 @@ class CreatePostFragment : Fragment() {
 
         topics.forEach { topic ->
             val chip = Chip(requireContext()).apply {
-                text = topic.name
+                text = topic.getNameWithEmoji()
                 isCheckable = true
                 id = View.generateViewId() // уникальный ID чипа
                 tag = topic.id             // сохранение id темы для последующего получения
